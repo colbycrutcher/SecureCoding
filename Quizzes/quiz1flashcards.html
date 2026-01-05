@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CYBR 437 Secure Coding — Quiz Study Guide (Flip Cards)</title>
+  <style>
+    :root{
+      --bg:#0b0f17;
+      --card:#121a2a;
+      --card2:#0f1625;
+      --text:#e8eefc;
+      --muted:#b7c3df;
+      --border:rgba(255,255,255,.12);
+      --shadow: 0 10px 25px rgba(0,0,0,.35);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1000px 600px at 15% 10%, rgba(120,170,255,.18), transparent 60%),
+                  radial-gradient(900px 500px at 85% 25%, rgba(255,160,120,.14), transparent 60%),
+                  var(--bg);
+      color:var(--text);
+      min-height:100vh;
+    }
+    header{
+      padding:28px 18px 14px;
+      max-width:1100px;
+      margin:0 auto;
+    }
+    h1{
+      margin:0 0 8px;
+      font-size: clamp(22px, 3.2vw, 34px);
+      letter-spacing:.2px;
+    }
+    .sub{
+      margin:0;
+      color:var(--muted);
+      line-height:1.5;
+      max-width:70ch;
+    }
+    .bar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:16px;
+      align-items:center;
+    }
+    input[type="search"]{
+      flex:1 1 280px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      outline:none;
+    }
+    input[type="search"]::placeholder{color:rgba(183,195,223,.8)}
+    select{
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      outline:none;
+    }
+    .pill{
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      color:var(--muted);
+      font-size:13px;
+      white-space:nowrap;
+    }
+    main{
+      max-width:1100px;
+      margin:0 auto;
+      padding:10px 18px 40px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap:14px;
+      margin-top:14px;
+    }
+
+    /* Flip card */
+    .cardWrap{
+      perspective: 1200px;
+    }
+    .card{
+      position:relative;
+      width:100%;
+      min-height:170px;
+      border-radius: var(--radius);
+      cursor:pointer;
+      transform-style: preserve-3d;
+      transition: transform .6s cubic-bezier(.2,.8,.2,1);
+      box-shadow: var(--shadow);
+      border:1px solid var(--border);
+    }
+    .card.is-flipped{ transform: rotateY(180deg); }
+
+    .face{
+      position:absolute;
+      inset:0;
+      padding:16px 16px 14px;
+      backface-visibility:hidden;
+      border-radius: var(--radius);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      background: linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    }
+    .front{
+      background-color: var(--card);
+    }
+    .back{
+      transform: rotateY(180deg);
+      background-color: var(--card2);
+    }
+    .tagRow{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .tag{
+      font-size:12px;
+      padding:6px 9px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      color:var(--muted);
+    }
+    .q{
+      font-size:16px;
+      line-height:1.35;
+      margin:0;
+      letter-spacing:.1px;
+    }
+    .a{
+      font-size:14px;
+      line-height:1.45;
+      margin:0;
+      color:rgba(232,238,252,.92);
+    }
+    .hint{
+      margin-top:auto;
+      font-size:12px;
+      color:rgba(183,195,223,.85);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+    }
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size:11px;
+      padding:2px 7px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.15);
+      color:rgba(232,238,252,.85);
+      white-space:nowrap;
+    }
+
+    footer{
+      max-width:1100px;
+      margin:0 auto;
+      padding:0 18px 34px;
+      color:rgba(183,195,223,.85);
+      font-size:13px;
+      line-height:1.5;
+    }
+    .btnRow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+    button{
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      cursor:pointer;
+    }
+    button:hover{ background: rgba(255,255,255,.07); }
+    .small{ font-size:12px; color:rgba(183,195,223,.85); margin-top:8px; }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>CYBR 437 Secure Coding — Flip-Card Quiz Study Guide</h1>
+    <p class="sub">
+      Click a card to flip. Use search + category filter to drill down.
+      (Built from the Winter 2026 syllabus.) <!-- Source: :contentReference[oaicite:0]{index=0} -->
+    </p>
+
+    <div class="bar">
+      <input id="search" type="search" placeholder="Search (e.g., 'midterm', 'late penalty', 'lab time', 'Week 8')…" />
+      <select id="category"></select>
+      <span class="pill" id="countPill">0 cards</span>
+    </div>
+
+    <div class="btnRow">
+      <button id="flipAll">Flip all (shown)</button>
+      <button id="unflipAll">Unflip all (shown)</button>
+      <button id="shuffle">Shuffle (shown)</button>
+    </div>
+    <div class="small">Tip: Click card • Keyboard: <span class="kbd">/</span> focuses search</div>
+  </header>
+
+  <main>
+    <div class="grid" id="grid"></div>
+  </main>
+
+  <footer>
+    <div><strong>Source:</strong> CYBR 437 Secure Coding Syllabus – Winter 2026. :contentReference[oaicite:1]{index=1}</div>
+  </footer>
+
+  <script>
+    // ====== Cards (from syllabus) ======
+    // Source reference: :contentReference[oaicite:2]{index=2}
+    const cards = [
+      // General Info
+      {cat:"General Info", q:"What is the lecture time and location for CYBR 437 (Winter 2026)?", a:"Mon/Wed/Fri 12:00–12:50 pm, Catalyst Building Room 221."},
+      {cat:"General Info", q:"What is the lab time and location for CYBR 437L?", a:"Tuesday 1:00–2:50 pm, Catalyst Building Room 216."},
+      {cat:"General Info", q:"Where is the course Canvas site hosted?", a:"On EWU Canvas (course site listed in the syllabus)."},
+      {cat:"Course Description", q:"What is CYBR 437 about (high-level)?", a:"Secure coding topics for programmers: writing code free from vulnerabilities; evaluating and testing software for vulnerabilities; studying specific issues like buffer overflow; with C/C++ emphasis and coding assignments."},
+      {cat:"Course Structure", q:"What is the companion course to CYBR 437?", a:"CYBR 437L Secure Coding Lab."},
+
+      // People
+      {cat:"People", q:"Who is the instructor and how can you contact them?", a:"Instructor: Abinash Borah. Email: aborah@ewu.edu. Office: Catalyst 337. Office hours: Mon/Wed 10–11 am; Tue/Thu 3–4 pm (and by appointment)."},
+      {cat:"People", q:"Who is the TA and what’s the email rule?", a:"TA: Paul Aguilar (paguilar4@ewu.edu). If you email the TA, CC the instructor."},
+      {cat:"People", q:"Where/when are the TA office hours?", a:"Catalyst Building, Cubicle 345J. Office hours: Mon/Wed/Fri 3–4 pm."},
+
+      // Prereqs / Ethics / Textbook
+      {cat:"Prereqs & Policies", q:"What prerequisites/corequisite are listed?", a:"Prereqs: CYBR 303 & 303L (≥ C+), CSCD 330 & 330L (≥ C+). Corequisite: CYBR 437L."},
+      {cat:"Prereqs & Policies", q:"What ethics requirement must be completed during the first week?", a:"You must sign the NCAE-C Student Code of Ethics and Professional Conduct during week 1 to proceed in the course."},
+      {cat:"Prereqs & Policies", q:"What is the ethics form due date mentioned?", a:"Return it to the instructor no later than Friday, Jan 9."},
+      {cat:"Materials", q:"What is the recommended textbook?", a:"Gray Hat Hacking, 6th edition (ISBN 978-1-26426-894-8)."},
+
+
+      // Schedule / Topics
+      {cat:"Schedule", q:"Week 1 topic and quiz/lab timing?", a:"Week 1 (Jan 5–9): C Review. Lab-1 released Jan 6. Quiz-1 on Jan 6 (in lab)."},
+      {cat:"Schedule", q:"Week 2 topic and what’s due?", a:"Week 2 (Jan 12–16): C Review (continued). Lab-2 released Jan 13. Lab-1 due Jan 12. Quiz-2 Jan 13 (in lab)."},
+      {cat:"Schedule", q:"Week 3 focus area?", a:"Week 3 (Jan 20–23): Buffer Overflow. Lab-3 released Jan 20. Lab-2 due Jan 20. Quiz-3 Jan 20 (in lab)."},
+      {cat:"Schedule", q:"Week 4 focus area?", a:"Week 4 (Jan 26–30): Buffer Overflow (continued). Lab-4 released Jan 27. Lab-3 due Jan 26. Quiz-4 Jan 27 (in lab)."},
+      {cat:"Schedule", q:"Week 5 focus area?", a:"Week 5 (Feb 2–6): Linux Kernel Exploits. Lab-5 released Feb 3. Lab-4 due Feb 2. Quiz-5 Feb 3 (in lab)."},
+      {cat:"Schedule", q:"Week 6 focus area + major exam date?", a:"Week 6 (Feb 9–13): Windows Exploits. Lab-6 released Feb 10. Lab-5 due Feb 9. Quiz-6 Feb 10 (in lab). Midterm Feb 13 (in class)."},
+      {cat:"Schedule", q:"Week 7 focus area?", a:"Week 7 (Feb 17–20): Reverse Engineering. Lab-7 released Feb 17. Lab-6 due Feb 17. Quiz-7 Feb 17 (in lab)."},
+      {cat:"Schedule", q:"Week 8 focus area?", a:"Week 8 (Feb 23–27): Hacking Containers. Lab-8 released Feb 24. Lab-7 due Feb 23. Quiz-8 Feb 24 (in lab)."},
+      {cat:"Schedule", q:"Week 9 focus area?", a:"Week 9 (Mar 2–6): Regular Expressions. Lab-9 released Mar 3. Lab-8 due Mar 2. Quiz-9 Mar 3 (in lab)."},
+      {cat:"Schedule", q:"Week 10 focus area?", a:"Week 10 (Mar 9–13): Vulnerability Assessments. Lab-10 released Mar 10. Lab-9 due Mar 9. Quiz-10 Mar 10 (in lab)."},
+      {cat:"Schedule", q:"Week 11 due item?", a:"Week 11 (Mar 16–20): Lab-10 due Mar 16."},
+
+      // Assessment / Grading
+      {cat:"Grading", q:"What are the grading weights for quizzes, labs, and the midterm?", a:"Quizzes 35%, Labs 50%, Midterm Exam 15%."},
+      {cat:"Grading", q:"Quiz policy: how many quiz grades are dropped?", a:"The lowest three quiz grades are excluded when calculating the total quiz grade."},
+      {cat:"Grading", q:"What is the rounding policy mentioned for total grade?", a:"The total grade will be rounded up to the next whole percentage."},
+      {cat:"Grading", q:"What percent is an A?", a:"A is ≥ 92%."},
+      {cat:"Grading", q:"What percent range is A-?", a:"A- is 88%–91%."},
+      {cat:"Grading", q:"What percent range is B+?", a:"B+ is 84%–87%."},
+      {cat:"Grading", q:"What percent range is B?", a:"B is 81%–83%."},
+      {cat:"Grading", q:"What percent range is B-?", a:"B- is 78%–80%."},
+      {cat:"Grading", q:"What percent range is C+?", a:"C+ is 75%–77%."},
+      {cat:"Grading", q:"What percent range is C?", a:"C is 72%–74%."},
+      {cat:"Grading", q:"What percent range is C-?", a:"C- is 69%–71%."},
+      {cat:"Grading", q:"What percent range is D+?", a:"D+ is 66%–68%."},
+      {cat:"Grading", q:"What percent range is D?", a:"D is 63%–65%."},
+      {cat:"Grading", q:"What percent range is D-?", a:"D- is 60%–62%."},
+      {cat:"Grading", q:"What percent is an F?", a:"F is < 60%."},
+
+      // Course Policies
+      {cat:"Course Policies", q:"What does the syllabus emphasize about attendance/participation?", a:"Professional behavior is expected, including attendance and punctuality. Participation matters; absences/non-participation negatively impact learning, and you’re accountable for material covered."},
+      {cat:"Course Policies", q:"Late work penalty and cutoff?", a:"Late work gets a 10% penalty per day unless an extension is granted. No late work accepted beyond 3 days past the due date (max 30% penalty)."},
+      {cat:"Course Policies", q:"If you have a valid reason for late work, what should you do?", a:"Contact the instructor in advance to request an extension for valid reasons (professional opportunity, medical situation, etc.)."},
+      {cat:"Course Policies", q:"If you have technical issues submitting in Canvas, what’s the recommended action?", a:"Email the instructor before the deadline with a description and attach the assignment; contact the IT Help Desk and submit to Canvas ASAP."},
+      {cat:"Course Policies", q:"Make-up quizzes/exams policy?", a:"No make-up quizzes/exams without prior approval; approval requires valid reasons (preferably with documentation)."},
+      {cat:"Communication", q:"How will the instructor communicate outside class?", a:"Via Canvas announcements and Canvas messages (and you should regularly check email/Canvas)."},
+      {cat:"Communication", q:"Email etiquette rule mentioned for emailing the instructor?", a:"Include the course number in the email."},
+      {cat:"Communication", q:"Typical instructor response window stated?", a:"Usually replies within 12 hours to messages received Mon–Fri between 8 am and 5 pm; after-hours/weekend messages may be read next working day."},
+
+      // University Policies / Support
+      {cat:"University Policies", q:"What is the academic integrity stance?", a:"Academic integrity is a cornerstone; violations may be reported and sanctioned up to an XF grade, suspension, or expulsion."},
+      {cat:"University Policies", q:"Give examples of academic dishonesty listed.", a:"Examples include: using notes/phones during exams, taking photos of exams, copying work, helping others during exams, misrepresenting others’ work as your own, etc."},
+      {cat:"University Policies", q:"Disability accommodations: what’s the general guidance?", a:"Students needing accommodations should contact Student Accommodations and Support Services; if you have approved accommodations, the instructor will reach out in week 2 to discuss implementation."},
+      {cat:"University Policies", q:"Title IX note: what is the instructor’s reporting responsibility?", a:"The instructor aims to keep information private but must share information regarding sexual misconduct with the University Title IX Coordinator; confidential resources are available."},
+      {cat:"University Policies", q:"Religious accommodations: what’s the timing guidance?", a:"Refer to EWU’s policy and submit a request using the linked form within the first two weeks of the quarter."},
+      {cat:"Student Support", q:"What support services are listed (name a few)?", a:"Student Affairs resources (including food pantry/emergency fund), IT Help Desk, EWU Library, Writers’ Center, Veterans Resource Center, PLUS Group for tutoring/study groups."},
+    ];
+
+    // ====== UI logic ======
+    const grid = document.getElementById("grid");
+    const search = document.getElementById("search");
+    const category = document.getElementById("category");
+    const countPill = document.getElementById("countPill");
+    const flipAllBtn = document.getElementById("flipAll");
+    const unflipAllBtn = document.getElementById("unflipAll");
+    const shuffleBtn = document.getElementById("shuffle");
+
+    const uniq = (arr) => Array.from(new Set(arr));
+    const categories = ["All", ...uniq(cards.map(c => c.cat)).sort((a,b)=>a.localeCompare(b))];
+
+    function setCategories(){
+      category.innerHTML = "";
+      categories.forEach(cat=>{
+        const opt = document.createElement("option");
+        opt.value = cat;
+        opt.textContent = cat;
+        category.appendChild(opt);
+      });
+    }
+
+    let current = [...cards];
+
+    function matchCard(c, term){
+      if(!term) return true;
+      const t = term.toLowerCase();
+      return (
+        c.cat.toLowerCase().includes(t) ||
+        c.q.toLowerCase().includes(t) ||
+        c.a.toLowerCase().includes(t)
+      );
+    }
+
+    function filterCards(){
+      const term = search.value.trim();
+      const cat = category.value;
+      const shown = current.filter(c => (cat==="All" ? true : c.cat===cat) && matchCard(c, term));
+      render(shown);
+      countPill.textContent = `${shown.length} card${shown.length===1?"":"s"}`;
+    }
+
+    function render(list){
+      grid.innerHTML = "";
+      list.forEach((c, idx)=>{
+        const wrap = document.createElement("div");
+        wrap.className = "cardWrap";
+
+        const card = document.createElement("div");
+        card.className = "card";
+        card.tabIndex = 0;
+        card.setAttribute("role","button");
+        card.setAttribute("aria-label", "Flip card");
+
+        const front = document.createElement("div");
+        front.className = "face front";
+        front.innerHTML = `
+          <div class="tagRow">
+            <span class="tag">${escapeHtml(c.cat)}</span>
+            <span class="tag">Q</span>
+          </div>
+          <p class="q">${escapeHtml(c.q)}</p>
+          <div class="hint">
+            <span>Click to reveal</span>
+            <span class="kbd">Enter</span>
+          </div>
+        `;
+
+        const back = document.createElement("div");
+        back.className = "face back";
+        back.innerHTML = `
+          <div class="tagRow">
+            <span class="tag">${escapeHtml(c.cat)}</span>
+            <span class="tag">A</span>
+          </div>
+          <p class="a">${escapeHtml(c.a)}</p>
+          <div class="hint">
+            <span>Click to go back</span>
+            <span class="kbd">Enter</span>
+          </div>
+        `;
+
+        card.appendChild(front);
+        card.appendChild(back);
+
+        const toggle = () => card.classList.toggle("is-flipped");
+        card.addEventListener("click", toggle);
+        card.addEventListener("keydown", (e)=>{
+          if(e.key === "Enter" || e.key === " "){
+            e.preventDefault();
+            toggle();
+          }
+        });
+
+        wrap.appendChild(card);
+        grid.appendChild(wrap);
+      });
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function getShownCards(){
+      return Array.from(grid.querySelectorAll(".card"));
+    }
+
+    flipAllBtn.addEventListener("click", ()=>{
+      getShownCards().forEach(el => el.classList.add("is-flipped"));
+    });
+    unflipAllBtn.addEventListener("click", ()=>{
+      getShownCards().forEach(el => el.classList.remove("is-flipped"));
+    });
+    shuffleBtn.addEventListener("click", ()=>{
+      // shuffle current order, then re-filter/render
+      for(let i=current.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [current[i], current[j]] = [current[j], current[i]];
+      }
+      filterCards();
+    });
+
+    search.addEventListener("input", filterCards);
+    category.addEventListener("change", filterCards);
+
+    // keyboard shortcut: "/" focuses search
+    document.addEventListener("keydown", (e)=>{
+      if(e.key === "/" && document.activeElement !== search){
+        e.preventDefault();
+        search.focus();
+      }
+    });
+
+    // init
+    setCategories();
+    filterCards();
+  </script>
+</body>
+</html>
