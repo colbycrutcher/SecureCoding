@@ -1,0 +1,14 @@
+./DataAbstraction/Inheritance/InheritanceTests.java
+./DataAbstraction/Interfaces/StudentComparableTests.java
+./General/Files/InputFileCloseTests.java
+./General/Files/InputFileReadTests.java
+./General/Files/OutputFileCloseTests.java
+./General/Files/OutputFileWriteTests.java
+./General/Sorting/InputFileOpenTests.java
+./General/Sorting/LinkedListDummySortTests.java
+./General/Sorting/OutputFileOpenTests.java
+./LinkedList/linkedList/LinkedListAddAllTests.java
+./LinkedList/linkedList/LinkedListDummyCloneTests.java
+./LinkedList/linkedList2/LinkedListCutListTests.java
+./Recursion/RecursionFindLargestTests.java
+./Recursion/ReverseArrayTests.java

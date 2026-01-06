@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/General/Files/Files.iml" filepath="$PROJECT_DIR$/General/Files/Files.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DataAbstraction/Inheritance/Inheritance.iml" filepath="$PROJECT_DIR$/DataAbstraction/Inheritance/Inheritance.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DataAbstraction/Interfaces/Interfaces.iml" filepath="$PROJECT_DIR$/DataAbstraction/Interfaces/Interfaces.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Recursion/Recursion.iml" filepath="$PROJECT_DIR$/Recursion/Recursion.iml" />
+      <module fileurl="file://$PROJECT_DIR$/General/Sorting/Sorting.iml" filepath="$PROJECT_DIR$/General/Sorting/Sorting.iml" />
+      <module fileurl="file://$PROJECT_DIR$/LinkedList/linkedList/linkedList.iml" filepath="$PROJECT_DIR$/LinkedList/linkedList/linkedList.iml" />
+      <module fileurl="file://$PROJECT_DIR$/LinkedList/linkedList2/linkedList2.iml" filepath="$PROJECT_DIR$/LinkedList/linkedList2/linkedList2.iml" />
+    </modules>
+  </component>
+</project>
