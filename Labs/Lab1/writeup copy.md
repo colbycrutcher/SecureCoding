@@ -63,14 +63,61 @@ output
  
 - (5 points) Write a program that declares and initializes (to any value) a double and an int. Your program should then print the address and the value stored in each of the variables, along with the amount of memory each variable occupies. 
 
-![](Pictures/q3code.png)
+```c
+#include <stdio.h>
 
-![](Pictures/q3out.png)
+
+int main(){
+    int a = 5;
+    double b = 2.0;
+
+    printf("Address of a: %p\n", &a);
+    printf("Value of a: %d\n", a);
+    printf("Amount of Memory for a: %ld bytes\n", sizeof(a));
+
+
+    printf("Address of b: %p\n", &b);
+    printf("Value of b: %f\n", b);
+    printf("Amount of Memory for a: %ld bytes\n", sizeof(b));
+
+
+    return 0;
+}
+
+
+```
+
+
+![](Pictures/q3outputfinal.png)
 
 # Question 4
 
 - (5  points) Write  a  function  that  accepts  two  double  variables  as  parameters  (by  value)  and swaps  their values. Then  call the function in  the  main  function to  verify  that your function works correctly. 
 
-![](Pictures/code.png)
+```c
+#include <stdio.h>
+
+void swap(double a, double b){
+    double temp;
+    temp = a;
+    a = b;
+    b = temp;
+    printf("After swap: a = %f, b = %f\n", a, b);
+}
+
+
+
+int main(){
+    
+    double x = 3.5;
+    double y = 7.1;
+
+    printf("Before swap: x = %f, y = %f\n", x, y);
+
+    swap(x, y);
+
+    return 0;
+}
+```
 
 ![Output](Pictures/codeout.png)

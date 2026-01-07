@@ -7,10 +7,13 @@ int main(){
 
     printf("Address of a: %p\n", &a);
     printf("Value of a: %d\n", a);
+    printf("Amount of Memory for a: %ld bytes\n", sizeof(a));
 
 
     printf("Address of b: %p\n", &b);
     printf("Value of b: %f\n", b);
+    printf("Amount of Memory for a: %ld bytes\n", sizeof(b));
+
 
     return 0;
 }

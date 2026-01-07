@@ -5,13 +5,19 @@ void swap(double a, double b){
     temp = a;
     a = b;
     b = temp;
-    printf("a = %f, b = %f\n", a, b);
+    printf("After swap: a = %f, b = %f\n", a, b);
 }
 
 
 
 int main(){
     
-    swap(3.5, 7.2);
+    double x = 3.5;
+    double y = 7.1;
+
+    printf("Before swap: x = %f, y = %f\n", x, y);
+
+    swap(x, y);
+
     return 0;
 }
