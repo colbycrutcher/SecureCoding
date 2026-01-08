@@ -14,14 +14,13 @@ a. (3 points) Execute the program and explain the output.
 
 - The second print value states "The value of p is C". This points *p to c, and returns the character 'C'.
 
-- The third print says "Now p is 0x16da9664c". Prior to this print statement, p = p + 1 was used and P is a memory address, it sends the new address in memory.
-
+- The third print says "Now p is 0x16da9664c". Prior to this print statement, p = p + 1 was executed, so the hex value of the location increased by one byte. 0x16da9664b ---> 0x16da9664c.
 
 b. (3 points) Modify the code to perform the same pointer arithmetic on a pointer to an int. Execute the program and explain the output.
 
 ![](Pictures/qb.png)
 
-- The output is essentially the same. I had to change the char in the f-string to accept an integer, as well as making defined c and *p as ints. The first line is the address in memory for p, the second just shows the value is an integer, and the address changes when we change the pointer address to + 1.
+- The output is essentially the same. I had to change the char in the f-string to accept an integer, as well as making defined c and *p as ints. The first line is the address in memory for p, the second just shows the actual value, which is an integer, and the address changes when we change the pointer address to + 1 by 4 bytes, which is also confirmed because that is the size of an integer in C.
 
 c. (3 points) Modify the code again to perform the same pointer arithmetic on a pointer to a
 double. Execute the program and explain the output.
@@ -33,18 +32,19 @@ This modification changes the output to accept a double/floating point value (al
 d. (6 points) What should happen if the line p = p + 1 is changed to p = p + 2 in parts
 a-c above? Execute the program with this change (for all of parts a-c) to verify your answer.
 
-- a. This changes the address value from 0x16d69a64b to 0x16d69a64d.The 'b' at the end of the address value changed to a 'd'.
+- a. This changes the address value from 0x16d69a64b to 0x16d69a64d.The 'b' at the end of the address value changed to a 'd', which means it changed 2 bytes in size, so it doubled going from p + 1 to p + 2.
 
 ![](Pictures/da.png)
 
-- b.  This changes the address from 0x16b48a648 to 0x16b48a650, a change of 2.
+- b.  This changes the address from 0x16b48a648 to 0x16b48a650, a change of 8 bytes. 1 int was 4 bytes, so this makes sense that it doubles.
 
 ![](Pictures/db.png)
 
-- c. This changes the address from  0x16d322640 to 0x16d322650, essentially just a change of +10 to the address value. 
+- c. This changes the address from  0x16d322640 to 0x16d322650, essentially just a change of 16 bytes, which doubles from the p + 1, which was 8. 
 
 ![](Pictures/dc.png)
 
+In conclusion, doing this doubled the bytes for the different types.
 
 # Question 2
 
@@ -54,9 +54,10 @@ output
 
 ![](Pictures/2.png)
 
-- fun1 takes in an int, and in main it is the value 5. From there I print the address, and then the value of x, which indeed is 5. 
+- fun1 takes in an int of 5, stored at the address of 0x16bca2628. 
+- fun2 doesn't take in any parameters, but declares the variable y as 10. I then print the address of y using %p, and feed it &y (which means address of y), which was 0x16bca262c. After that I just print the int value of y, being 10.
 
-- fun2 doesn't take in any parameters, but declares the variable y as 10. I then print the address of y using %p, and feed it &y (which means address of y). After that I just print the int value of y.
+In conclusion because the size of an integer is 4, it increased by 4 more by bytes, due to fun2 having a two digit int. fun1 only had 1 int.
 
 
 # Question 3
