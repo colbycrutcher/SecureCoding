@@ -27,7 +27,7 @@ double. Execute the program and explain the output.
 
 ![](Pictures/qc.png)
 
-This modification changes the output to accept a double/floating point value (allow decimal values). The same output occurs, it prints the address, then the double, then adds 1 to the address's value, ultimately changing the address where p is stored. 
+- This modification changes the output to accept a double/floating point value (allow decimal values). The same output occurs, it prints the address, then the double, then adds 8 bytes to the address. 
 
 d. (6 points) What should happen if the line p = p + 1 is changed to p = p + 2 in parts
 a-c above? Execute the program with this change (for all of parts a-c) to verify your answer.
@@ -79,7 +79,7 @@ int main(){
 
     printf("Address of b: %p\n", &b);
     printf("Value of b: %f\n", b);
-    printf("Amount of Memory for a: %ld bytes\n", sizeof(b));
+    printf("Amount of Memory for b: %ld bytes\n", sizeof(b));
 
 
     return 0;
@@ -89,7 +89,7 @@ int main(){
 ```
 
 
-![](Pictures/q3outputfinal.png)
+![](Pictures/q3fix.png)
 
 # Question 4
 
