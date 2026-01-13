@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>C Quiz Flashcards (Pointers, Memory, Bases)</title>
+  <style>
+    :root{
+      --bg:#0b0f19; --card:#121a2a; --text:#e8eefc; --muted:#a9b7d6;
+      --accent:#7aa2ff; --good:#38d996; --shadow:0 12px 30px rgba(0,0,0,.35);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; padding:24px; color:var(--text);
+      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background: radial-gradient(1200px 800px at 20% 10%, rgba(122,162,255,.25), transparent 60%),
+                  radial-gradient(900px 700px at 80% 30%, rgba(56,217,150,.18), transparent 60%),
+                  var(--bg);
+    }
+    header{max-width:1100px;margin:0 auto 18px;display:grid;gap:10px}
+    h1{margin:0;font-size:clamp(20px,3vw,34px)}
+    .sub{margin:0;color:var(--muted);line-height:1.35}
+
+    .controls{
+      max-width:1100px;margin:14px auto 18px;display:grid;gap:12px;
+      background:rgba(18,26,42,.65); border:1px solid rgba(255,255,255,.08);
+      padding:14px;border-radius:var(--radius);box-shadow:var(--shadow);
+    }
+    .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+    .search{
+      flex:1 1 280px;display:flex;gap:10px;align-items:center;
+      background:rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.10);
+      border-radius:14px;padding:10px 12px;
+    }
+    .search input{width:100%;border:0;outline:none;background:transparent;color:var(--text);font-size:14px}
+    .pillbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+    .pill{
+      cursor:pointer;user-select:none;padding:8px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.18);
+      color:var(--muted);font-size:13px;transition:.15s ease;
+    }
+    .pill.active{border-color:rgba(122,162,255,.55);background:rgba(122,162,255,.18);color:var(--text)}
+    .btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+    button{
+      cursor:pointer;border:0;padding:10px 12px;border-radius:14px;
+      color:var(--text);background:rgba(122,162,255,.20);border:1px solid rgba(122,162,255,.35);
+      transition:.15s ease;font-weight:600;font-size:13px;
+    }
+    button.secondary{background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.12);color:var(--muted)}
+    button:hover{transform:translateY(-1px)}
+    .meta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;color:var(--muted);font-size:13px}
+    .meta strong{color:var(--text)}
+    kbd{
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+      font-size:12px;padding:2px 6px;border-radius:8px;border:1px solid rgba(255,255,255,.16);
+      background:rgba(0,0,0,.25);color:var(--text);
+    }
+
+    main{max-width:1100px;margin:0 auto;display:grid;gap:14px}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+
+    .cardWrap{grid-column:span 12; perspective:1200px; -webkit-perspective:1200px;}
+    @media(min-width:700px){.cardWrap{grid-column:span 6}}
+    @media(min-width:1020px){.cardWrap{grid-column:span 4}}
+
+    /* ✅ Key fixes: webkit 3D + backface visibility */
+    .card{
+      position:relative;width:100%;min-height:170px;border-radius:var(--radius);
+      transform-style:preserve-3d; -webkit-transform-style:preserve-3d;
+      transition:transform .55s cubic-bezier(.2,.75,.2,1);
+      box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.10);
+      background:rgba(18,26,42,.62);
+      cursor:pointer;outline:none;
+      will-change: transform;
+    }
+    .card.flipped{transform:rotateY(180deg)}
+
+    .face{
+      position:absolute;inset:0;padding:16px 16px 14px;display:flex;
+      flex-direction:column;justify-content:space-between;border-radius:var(--radius);
+      overflow:hidden;
+
+      backface-visibility:hidden;
+      -webkit-backface-visibility:hidden;
+
+      transform: translateZ(0.1px);
+      -webkit-transform: translateZ(0.1px);
+    }
+
+    .front{
+      background:linear-gradient(160deg, rgba(122,162,255,.14), transparent 55%),
+                 linear-gradient(0deg, rgba(0,0,0,.10), rgba(0,0,0,.10));
+    }
+    .back{
+      transform:rotateY(180deg) translateZ(0.1px);
+      -webkit-transform:rotateY(180deg) translateZ(0.1px);
+      background:linear-gradient(160deg, rgba(56,217,150,.14), transparent 55%),
+                 linear-gradient(0deg, rgba(0,0,0,.10), rgba(0,0,0,.10));
+    }
+
+    .tag{
+      display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);
+      padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.18);width:fit-content;
+    }
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(122,162,255,.18)}
+    .dot.green{background:var(--good);box-shadow:0 0 0 4px rgba(56,217,150,.16)}
+    .q,.a{margin:10px 0 0;font-size:16px;line-height:1.35}
+    .muted{color:var(--muted);font-size:12px;margin-top:10px}
+
+    .empty{
+      border:1px dashed rgba(255,255,255,.18);border-radius:var(--radius);
+      padding:18px;color:var(--muted);text-align:center;background:rgba(0,0,0,.18);
+      grid-column: span 12;
+    }
+    .footerHelp{text-align:center;color:var(--muted);font-size:13px;padding:12px 0 6px}
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>C Quiz Flashcards: Pointers • Memory • Bases</h1>
+    <p class="sub">
+      Click a card to flip. Keyboard: <kbd>Space</kbd>/<kbd>Enter</kbd> flips focused card, <kbd>R</kbd> reset, <kbd>S</kbd> shuffle.
+    </p>
+  </header>
+
+  <section class="controls">
+    <div class="row">
+      <div class="search">
+        🔎 <input id="search" type="text" placeholder="Search (e.g., sizeof, heap, binary, dereference)..." />
+      </div>
+
+      <div class="btns">
+        <button id="shuffleBtn">Shuffle</button>
+        <button id="resetBtn" class="secondary">Reset</button>
+        <button id="flipAllBtn" class="secondary">Flip All</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="pillbar" id="filters"></div>
+      <div class="meta">
+        <div>Showing <strong id="countShown">0</strong> / <strong id="countTotal">0</strong> cards</div>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div class="grid" id="grid"></div>
+    <div class="footerHelp">If you want, I can add more cards from the pointer worksheet expressions too.</div>
+  </main>
+
+  <script>
+    const cards = [
+      { topic:"C & sizeof", q:"What does <strong>sizeof</strong> return?", a:"The size (in bytes) of its operand, returned as type <strong>size_t</strong>." },
+      { topic:"C & sizeof", q:"Is <strong>sizeof</strong> a function or an operator?", a:"<strong>Operator</strong> (not a function)." },
+      { topic:"C & sizeof", q:"Does <strong>sizeof</strong> evaluate its operand?", a:"Usually <strong>no</strong>. It only evaluates the operand for <strong>variable-length arrays</strong>." },
+      { topic:"C & sizeof", q:"Why do parentheses sometimes matter with <strong>sizeof</strong>?", a:"Because precedence matters: <strong>sizeof a + b</strong> differs from <strong>sizeof(a + b)</strong>." },
+
+      { topic:"Pointers", q:"What does a pointer store?", a:"A <strong>memory address</strong> of another variable/object." },
+      { topic:"Pointers", q:"What does the <strong>&amp;</strong> operator do?", a:"Returns the <strong>address</strong> of a variable." },
+      { topic:"Pointers", q:"What does the <strong>*</strong> operator do on a pointer?", a:"<strong>Dereferences</strong> it (value at the pointed-to address)." },
+      { topic:"Pointers", q:"If <code>int *p = &amp;x;</code> what is <code>*p</code>?", a:"The <strong>value of x</strong>." },
+
+      { topic:"Pointer Arithmetic", q:"How far does an <code>int*</code> move for <code>p + 1</code> (worksheet)?", a:"By <strong>4 bytes</strong>." },
+      { topic:"Pointer Arithmetic", q:"What does <code>p = p + 1</code> mean for an <code>int*</code>?", a:"Advance to the <strong>next int</strong> in memory (address +4 here)." },
+      { topic:"Pointer Arithmetic", q:"What happens if you dereference an invalid pointer?", a:"<strong>Undefined behavior</strong> (often crash/garbage)." },
+
+      { topic:"Memory Layout", q:"Main memory segments of a C program?", a:"Text/code, Initialized data, BSS (uninitialized), Heap, Stack." },
+      { topic:"Memory Layout", q:"What is in the text/code segment?", a:"Executable instructions / functions (often <strong>read-only</strong>)." },
+      { topic:"Memory Layout", q:"Initialized data segment stores…", a:"Global/static variables that are <strong>initialized</strong>." },
+      { topic:"Memory Layout", q:"BSS segment stores…", a:"Global/static variables that are <strong>not initialized</strong> by programmer." },
+      { topic:"Memory Layout", q:"Heap is used for…", a:"Dynamic allocation (<code>malloc</code>/<code>calloc</code>/<code>realloc</code>)." },
+      { topic:"Memory Layout", q:"Stack is used for…", a:"Local variables, params, return addresses, stack frames." },
+
+      { topic:"Stack Frames", q:"What’s in a function stack frame?", a:"Return address, parameters, local variables, saved registers, frame/base pointer." },
+
+      { topic:"Dynamic Memory", q:"What does <code>malloc(size)</code> do?", a:"Allocates <strong>size bytes</strong> of <strong>uninitialized</strong> memory; returns a pointer." },
+      { topic:"Dynamic Memory", q:"What does <code>calloc(nmemb, size)</code> do?", a:"Allocates array memory and sets it <strong>to zero</strong>." },
+      { topic:"Dynamic Memory", q:"What does <code>realloc(ptr, size)</code> do?", a:"Resizes an allocation while preserving contents up to the smaller size." },
+      { topic:"Dynamic Memory", q:"What if you free memory not from malloc/calloc/realloc?", a:"<strong>Undefined behavior</strong>." },
+      { topic:"Dynamic Memory", q:"What if you free the same pointer twice?", a:"<strong>Undefined behavior</strong> (can crash/corrupt heap)." },
+
+      { topic:"Bases", q:"Binary → Decimal method?", a:"Sum each bit × its power of 2 (place values)." },
+      { topic:"Bases", q:"<code>10101000₂</code> in decimal?", a:"<strong>168</strong>." },
+      { topic:"Bases", q:"Decimal → Binary method?", a:"Powers-of-2 subtraction or repeated division by 2 (snake method)." },
+      { topic:"Bases", q:"Binary → Hex method?", a:"Group bits into <strong>4</strong>s and convert each nibble." },
+      { topic:"Bases", q:"<code>10011011₂</code> in hex?", a:"<strong>0x9B</strong>." },
+      { topic:"Bases", q:"Hex is base… and uses digits…", a:"Base-16: <strong>0–9</strong> and <strong>A–F</strong> (10–15)." },
+
+      { topic:"Practice", q:"If <code>int *p</code> is at <code>0x1000</code>, what is <code>p + 1</code>?", a:"<strong>0x1004</strong> (int=4 bytes)." },
+      { topic:"Practice", q:"Where does <code>malloc()</code> allocate memory?", a:"On the <strong>heap</strong>." },
+      { topic:"Practice", q:"Convert <code>01010110₂</code> to decimal.", a:"<strong>86</strong> (64 + 16 + 4 + 2)." },
+      { topic:"Practice", q:"Convert <code>118₁₀</code> to binary.", a:"<strong>01110110₂</strong> (64+32+16+4+2)." }
+    ];
+
+    const topics = ["All", ...Array.from(new Set(cards.map(c => c.topic)))];
+    const grid = document.getElementById("grid");
+    const filters = document.getElementById("filters");
+    const searchInput = document.getElementById("search");
+    const countShown = document.getElementById("countShown");
+    const countTotal = document.getElementById("countTotal");
+
+    const shuffleBtn = document.getElementById("shuffleBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const flipAllBtn = document.getElementById("flipAllBtn");
+
+    let activeTopic = "All";
+    let query = "";
+    let flipAllState = false;
+    let flippedIds = new Set();
+
+    function stripHtml(html){
+      const div = document.createElement("div");
+      div.innerHTML = html;
+      return div.textContent || div.innerText || "";
+    }
+    function dotClass(topic){
+      const green = ["Dynamic Memory","Stack Frames","Memory Layout"].includes(topic);
+      return green ? "dot green" : "dot";
+    }
+    function matches(card){
+      const inTopic = activeTopic === "All" || card.topic === activeTopic;
+      if(!inTopic) return false;
+      if(!query) return true;
+      const hay = (stripHtml(card.q)+" "+stripHtml(card.a)+" "+card.topic).toLowerCase();
+      return hay.includes(query.toLowerCase());
+    }
+
+    function renderFilters(){
+      filters.innerHTML = "";
+      topics.forEach(t=>{
+        const pill = document.createElement("div");
+        pill.className = "pill" + (t===activeTopic ? " active":"");
+        pill.textContent = t;
+        pill.onclick = ()=>{
+          activeTopic = t;
+          flippedIds.clear();
+          flipAllState = false;
+          render();
+          renderFilters();
+        };
+        filters.appendChild(pill);
+      });
+    }
+
+    function render(){
+      const filtered = cards.filter(matches);
+      countTotal.textContent = String(cards.length);
+      countShown.textContent = String(filtered.length);
+      grid.innerHTML = "";
+
+      if(filtered.length === 0){
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "No cards match that filter/search.";
+        grid.appendChild(empty);
+        return;
+      }
+
+      filtered.forEach((c, idx)=>{
+        const id = `${c.topic}::${stripHtml(c.q)}::${idx}`;
+        const wrap = document.createElement("div");
+        wrap.className = "cardWrap";
+
+        const card = document.createElement("div");
+        card.className = "card";
+        card.tabIndex = 0;
+        if(flipAllState || flippedIds.has(id)) card.classList.add("flipped");
+
+        const front = document.createElement("div");
+        front.className = "face front";
+        front.innerHTML = `
+          <div class="tag"><span class="${dotClass(c.topic)}"></span>${c.topic}</div>
+          <div class="q">${c.q}</div>
+          <div class="muted">Click to flip →</div>
+        `;
+
+        const back = document.createElement("div");
+        back.className = "face back";
+        back.innerHTML = `
+          <div class="tag"><span class="${dotClass(c.topic)}"></span>Answer</div>
+          <div class="a">${c.a}</div>
+          <div class="muted">Click to flip back ←</div>
+        `;
+
+        card.append(front, back);
+
+        function toggleFlip(){
+          card.classList.toggle("flipped");
+          const isFlipped = card.classList.contains("flipped");
+          if(!flipAllState){
+            if(isFlipped) flippedIds.add(id);
+            else flippedIds.delete(id);
+          }
+        }
+
+        card.addEventListener("click", toggleFlip);
+        card.addEventListener("keydown",(e)=>{
+          if(e.code==="Space" || e.key==="Enter"){
+            e.preventDefault();
+            toggleFlip();
+          }
+        });
+
+        wrap.appendChild(card);
+        grid.appendChild(wrap);
+      });
+    }
+
+    function shuffleArray(arr){
+      for(let i=arr.length-1;i>0;i--){
+        const j=Math.floor(Math.random()*(i+1));
+        [arr[i],arr[j]]=[arr[j],arr[i]];
+      }
+    }
+
+    searchInput.addEventListener("input",(e)=>{
+      query = e.target.value.trim();
+      flippedIds.clear();
+      flipAllState = false;
+      render();
+    });
+    shuffleBtn.onclick = ()=>{
+      shuffleArray(cards);
+      flippedIds.clear();
+      flipAllState = false;
+      render();
+    };
+    resetBtn.onclick = ()=>{
+      flippedIds.clear();
+      flipAllState = false;
+      render();
+    };
+    flipAllBtn.onclick = ()=>{
+      flipAllState = !flipAllState;
+      flippedIds.clear();
+      render();
+    };
+
+    document.addEventListener("keydown",(e)=>{
+      if(e.target && (e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA")) return;
+      if(e.key.toLowerCase()==="r"){ flippedIds.clear(); flipAllState=false; render(); }
+      if(e.key.toLowerCase()==="s"){ shuffleArray(cards); flippedIds.clear(); flipAllState=false; render(); }
+    });
+
+    renderFilters();
+    render();
+  </script>
+</body>
+</html>
