@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CYBR 437 Quiz — C Review Part II (Memory, Stack/Heap)</title>
+  <style>
+    :root{
+      --bg:#0b0f19; --panel:#121a2a; --panel2:#0f1626;
+      --text:#e8eefc; --muted:#a9b7d6;
+      --accent:#7aa2ff; --good:#38d996; --warn:#ffcf5c; --bad:#ff6b6b;
+      --shadow:0 12px 30px rgba(0,0,0,.35); --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; padding:24px; color:var(--text);
+      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background: radial-gradient(1200px 800px at 20% 10%, rgba(122,162,255,.25), transparent 60%),
+                  radial-gradient(900px 700px at 80% 30%, rgba(56,217,150,.18), transparent 60%),
+                  var(--bg);
+    }
+    header{max-width:980px;margin:0 auto 14px;display:grid;gap:10px}
+    h1{margin:0;font-size:clamp(20px,3vw,34px)}
+    .sub{margin:0;color:var(--muted);line-height:1.35}
+    kbd{
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+      font-size:12px;padding:2px 6px;border-radius:8px;border:1px solid rgba(255,255,255,.16);
+      background:rgba(0,0,0,.25);color:var(--text);
+    }
+
+    .app{max-width:980px;margin:0 auto;display:grid;gap:14px}
+    .panel{
+      background:rgba(18,26,42,.70);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px;
+      backdrop-filter: blur(10px);
+    }
+    .topbar{
+      display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+    }
+    .stats{display:flex;flex-wrap:wrap;gap:10px;align-items:center;color:var(--muted);font-size:13px}
+    .stats strong{color:var(--text)}
+    .btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+    button{
+      cursor:pointer;border:0;padding:10px 12px;border-radius:14px;
+      color:var(--text);background:rgba(122,162,255,.20);
+      border:1px solid rgba(122,162,255,.35);
+      transition:.15s ease;font-weight:700;font-size:13px;
+    }
+    button:hover{transform:translateY(-1px)}
+    button.secondary{background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.12);color:var(--muted)}
+    button.good{background:rgba(56,217,150,.18);border:1px solid rgba(56,217,150,.35)}
+    button.bad{background:rgba(255,107,107,.14);border:1px solid rgba(255,107,107,.35)}
+
+    .card{
+      display:grid;gap:12px;
+      padding:16px;border-radius:var(--radius);
+      background:linear-gradient(160deg, rgba(122,162,255,.16), transparent 55%),
+                 linear-gradient(0deg, rgba(0,0,0,.10), rgba(0,0,0,.10));
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .tag{
+      display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);
+      padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.18);width:fit-content;
+    }
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(122,162,255,.18)}
+    .dot.green{background:var(--good);box-shadow:0 0 0 4px rgba(56,217,150,.16)}
+    .dot.warn{background:var(--warn);box-shadow:0 0 0 4px rgba(255,207,92,.14)}
+    .q{
+      font-size:18px;line-height:1.35;margin:0;
+    }
+    .help{color:var(--muted);font-size:13px;line-height:1.35}
+    .choices{display:grid;gap:10px;margin-top:4px}
+    .choice{
+      width:100%;
+      text-align:left;
+      padding:12px 12px;
+      border-radius:16px;
+      background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.12);
+      color:var(--text);
+      font-size:14px;
+      line-height:1.35;
+      cursor:pointer;
+      transition:.12s ease;
+    }
+    .choice:hover{transform:translateY(-1px)}
+    .choice.correct{
+      border-color:rgba(56,217,150,.55);
+      background:rgba(56,217,150,.16);
+    }
+    .choice.wrong{
+      border-color:rgba(255,107,107,.55);
+      background:rgba(255,107,107,.12);
+    }
+    .explain{
+      display:none;
+      padding:12px 12px;
+      border-radius:16px;
+      background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.12);
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+    }
+    .explain.show{display:block}
+    .explain strong{color:var(--text)}
+    code{
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+      font-size:12.5px;
+    }
+
+    .footer{color:var(--muted);font-size:13px;text-align:center;padding:6px 0 2px}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>CYBR 437 Quiz — C Review Part II</h1>
+    <p class="sub">
+      Topic: memory layout, stack/heap, stack frames, malloc/calloc/realloc/free (from the Part II slide deck).
+      Shortcuts: <kbd>N</kbd> next, <kbd>P</kbd> previous, <kbd>R</kbd> reset, <kbd>S</kbd> shuffle.
+    </p>
+  </header>
+
+  <div class="app">
+    <div class="panel topbar">
+      <div class="stats">
+        <div>Question: <strong id="qNum">1</strong>/<strong id="qTotal">1</strong></div>
+        <div>Score: <strong id="score">0</strong></div>
+        <div>Streak: <strong id="streak">0</strong></div>
+      </div>
+      <div class="btns">
+        <button id="prevBtn" class="secondary">Previous</button>
+        <button id="nextBtn" class="secondary">Next</button>
+        <button id="shuffleBtn">Shuffle</button>
+        <button id="resetBtn" class="bad">Reset</button>
+      </div>
+    </div>
+
+    <div class="panel card" id="card">
+      <div class="tag"><span class="dot" id="dot"></span><span id="topic">Topic</span></div>
+      <p class="q" id="question">Question text</p>
+      <div class="help" id="help">Pick an answer. After you answer, you’ll see the explanation.</div>
+      <div class="choices" id="choices"></div>
+      <div class="explain" id="explain"></div>
+    </div>
+
+    <div class="footer">Built from “C Review – Part II” slides (memory layout / stack & heap / memory functions).</div>
+  </div>
+
+  <script>
+    // Questions derived from the Part II slide content:
+    // - Segments: text, initialized data, BSS, heap, stack
+    // - Heap/stack behavior
+    // - Stack frame components
+    // - malloc/realloc/calloc/free behaviors and edge cases
+    const QUESTIONS = [
+      {
+        topic: "Memory Layout",
+        dot: "warn",
+        q: "A typical C process memory representation includes which sections (choose the best complete set)?",
+        choices: [
+          "Text/code, initialized data, uninitialized data (BSS), heap, stack",
+          "Heap, stack, registers only",
+          "Text/code, heap, swap, stack",
+          "BSS, cache, heap, stack only"
+        ],
+        correct: 0,
+        why: "The slides list: <strong>Text/code</strong>, <strong>Initialized data</strong>, <strong>Uninitialized data (BSS)</strong>, <strong>Stack</strong>, <strong>Heap</strong>."
+      },
+      {
+        topic: "Memory Layout",
+        dot: "warn",
+        q: "What is the text/code segment used for?",
+        choices: [
+          "Storing executable code like functions and instructions (often read-only)",
+          "Storing dynamically allocated arrays from malloc",
+          "Storing local variables for function calls",
+          "Storing uninitialized static variables"
+        ],
+        correct: 0,
+        why: "Text/code segment stores executable instructions and is usually read-only to prevent accidental modification."
+      },
+      {
+        topic: "Data Segments",
+        dot: "warn",
+        q: "Which statement best matches the initialized data segment?",
+        choices: [
+          "Stores global/static variables initialized by the programmer",
+          "Stores local variables and return addresses",
+          "Stores heap allocations and grows downward",
+          "Stores only function parameters"
+        ],
+        correct: 0,
+        why: "Initialized data segment contains global/static variables that have been initialized."
+      },
+      {
+        topic: "Data Segments",
+        dot: "warn",
+        q: "Which statement best matches the BSS segment?",
+        choices: [
+          "Stores global/static variables not initialized by the programmer (often zeroed at runtime)",
+          "Stores executable code for functions",
+          "Stores malloc allocations; uninitialized by default",
+          "Stores local variables for each function call"
+        ],
+        correct: 0,
+        why: "BSS holds uninitialized global/static variables, and the diagram notes it's initialized to zero at runtime."
+      },
+      {
+        topic: "Stack vs Heap",
+        dot: "green",
+        q: "What is the heap primarily used for?",
+        choices: [
+          "Dynamic memory allocation (malloc/calloc/realloc)",
+          "Storing local variables and return addresses",
+          "Storing program instructions",
+          "Storing command line arguments only"
+        ],
+        correct: 0,
+        why: "The slides: heap is used for <strong>dynamic memory allocation</strong> and managed by allocation functions."
+      },
+      {
+        topic: "Stack vs Heap",
+        dot: "green",
+        q: "What is the stack primarily used for?",
+        choices: [
+          "Local variables, function parameters, and return addresses (stack frames)",
+          "Global variables that persist for the program lifetime",
+          "Only heap allocations and free lists",
+          "Executable instructions"
+        ],
+        correct: 0,
+        why: "Slides: stack stores local variables, params, and return addresses; each call creates a stack frame."
+      },
+      {
+        topic: "Stack vs Heap",
+        dot: "green",
+        q: "How do stack and heap typically grow in memory (as described in the slides)?",
+        choices: [
+          "Heap grows toward higher addresses; stack is at higher addresses and grows opposite direction",
+          "Both grow toward higher addresses",
+          "Both grow toward lower addresses",
+          "Stack grows toward higher addresses; heap grows toward lower addresses"
+        ],
+        correct: 0,
+        why: "Slides: heap starts near end of BSS and grows toward higher addresses; stack is at higher addresses and grows opposite."
+      },
+      {
+        topic: "Where Variables Live",
+        dot: "warn",
+        q: "In the code: <code>static int y;</code> (declared inside main), where does <code>y</code> live?",
+        choices: [
+          "In the global/static area (BSS if uninitialized)",
+          "On the stack",
+          "On the heap",
+          "In the text segment"
+        ],
+        correct: 0,
+        why: "<strong>static</strong> storage duration variables live in the data segments; uninitialized static typically goes to <strong>BSS</strong>."
+      },
+      {
+        topic: "Where Variables Live",
+        dot: "warn",
+        q: "In the code: <code>int a = 2;</code> (inside main), where does <code>a</code> live?",
+        choices: [
+          "On the stack (local variable)",
+          "On the heap (malloc)",
+          "In the text segment",
+          "In the initialized data segment"
+        ],
+        correct: 0,
+        why: "Local variables declared in a function are stored in the function’s <strong>stack frame</strong>."
+      },
+      {
+        topic: "Where Variables Live",
+        dot: "warn",
+        q: "In the code: <code>int *ptr = (int*) malloc(2*sizeof(int));</code> where is the allocated array (<code>ptr[0]</code>, <code>ptr[1]</code>) stored?",
+        choices: [
+          "On the heap",
+          "On the stack",
+          "In the BSS segment",
+          "In the text segment"
+        ],
+        correct: 0,
+        why: "<code>malloc</code> allocates memory from the <strong>heap</strong>."
+      },
+      {
+        topic: "Stack Frames",
+        dot: "green",
+        q: "Which is NOT a typical component of a function stack frame (per slides)?",
+        choices: [
+          "Return address",
+          "Local variables",
+          "Saved registers",
+          "Heap free list metadata"
+        ],
+        correct: 3,
+        why: "Slides list: return address, parameters, local variables, saved registers, and a stack/frame pointer — not heap metadata."
+      },
+      {
+        topic: "Stack Frames",
+        dot: "green",
+        q: "What is the purpose of the return address in a stack frame?",
+        choices: [
+          "It tells the program where to continue execution after the called function completes",
+          "It stores the size of the heap allocation",
+          "It stores the global variable table",
+          "It stores the program’s command-line arguments"
+        ],
+        correct: 0,
+        why: "Slides: return address is the memory address where execution should return after the function completes."
+      },
+      {
+        topic: "Memory Functions",
+        dot: "green",
+        q: "What does <code>malloc(size)</code> do?",
+        choices: [
+          "Allocates <code>size</code> bytes and returns a pointer; memory is not initialized",
+          "Allocates and zero-initializes an array",
+          "Resizes an allocation and always moves it",
+          "Frees memory and sets the pointer to NULL automatically"
+        ],
+        correct: 0,
+        why: "Slides: malloc allocates <strong>size bytes</strong>, returns a pointer, and the memory is <strong>not initialized</strong>."
+      },
+      {
+        topic: "Memory Functions",
+        dot: "green",
+        q: "If <code>malloc(0)</code> is called, what can it return (per slides)?",
+        choices: [
+          "Either NULL or a unique pointer value that can later be passed to free()",
+          "Always NULL",
+          "Always a valid pointer to 0 bytes that you can dereference",
+          "A pointer into the stack"
+        ],
+        correct: 0,
+        why: "Slides: if size is zero, malloc returns either <strong>NULL</strong> or a <strong>unique pointer</strong> that can be passed to free()."
+      },
+      {
+        topic: "Memory Functions",
+        dot: "green",
+        q: "What does <code>calloc(nmemb, size)</code> do differently than malloc?",
+        choices: [
+          "It sets the allocated memory to zero",
+          "It returns memory that is always uninitialized",
+          "It can only allocate one element",
+          "It always fails if nmemb is large"
+        ],
+        correct: 0,
+        why: "Slides: calloc allocates for an array and the memory is <strong>set to zero</strong>."
+      },
+      {
+        topic: "Memory Functions",
+        dot: "green",
+        q: "Why is <code>calloc(nmemb, size)</code> safer than <code>malloc(nmemb*size)</code> (per slides)?",
+        choices: [
+          "calloc can detect integer overflow in nmemb*size and return an error",
+          "calloc always uses the stack instead of the heap",
+          "malloc always zeroes memory so they’re identical",
+          "malloc detects overflow but calloc does not"
+        ],
+        correct: 0,
+        why: "Slides: calloc can detect <strong>integer overflow</strong> in the multiplication; malloc(nmemb*size) may allocate an incorrectly sized block."
+      },
+      {
+        topic: "Memory Functions",
+        dot: "green",
+        q: "What does <code>realloc(ptr, size)</code> do?",
+        choices: [
+          "Deallocates old block and returns pointer to new block of requested size; preserves contents up to min(old,new)",
+          "Always doubles the allocation and keeps the same address",
+          "Only frees ptr; it does not allocate new memory",
+          "Only works when size is zero"
+        ],
+        correct: 0,
+        why: "Slides: realloc deallocates old object, returns new one of given size, and preserves contents up to the lesser size."
+      },
+      {
+        topic: "Memory Functions",
+        dot: "green",
+        q: "If <code>realloc(ptr, 0)</code> is called, what is the behavior described in the slides?",
+        choices: [
+          "Implementation-defined: may return NULL or act as if size were non-zero; using returned pointer may be undefined",
+          "Always returns a valid pointer you can dereference",
+          "Always returns ptr unchanged",
+          "Always crashes immediately"
+        ],
+        correct: 0,
+        why: "Slides: size=0 is implementation-defined; behavior varies; and using the returned pointer to access an object can be undefined."
+      },
+      {
+        topic: "Memory Functions",
+        dot: "green",
+        q: "What does <code>free(ptr)</code> require to be safe?",
+        choices: [
+          "ptr must have been returned by malloc/calloc/realloc and not already freed",
+          "ptr must point to a local stack variable",
+          "ptr must be non-NULL and point to text segment",
+          "ptr must be an integer, not a pointer"
+        ],
+        correct: 0,
+        why: "Slides: free must receive a pointer returned by malloc/calloc/realloc; otherwise or if already freed → undefined behavior."
+      },
+      {
+        topic: "Memory Functions",
+        dot: "green",
+        q: "What happens if <code>free(NULL)</code> is called?",
+        choices: [
+          "No operation is performed",
+          "Undefined behavior",
+          "It frees the entire heap",
+          "It returns a unique pointer"
+        ],
+        correct: 0,
+        why: "Slides: If ptr is NULL, <strong>no operation is performed</strong>."
+      }
+    ];
+
+    let deck = QUESTIONS.map((q, i) => ({...q, id:i}));
+    let idx = 0;
+    let score = 0;
+    let streak = 0;
+    let answered = new Map(); // id -> {picked, correct}
+
+    const qNum = document.getElementById("qNum");
+    const qTotal = document.getElementById("qTotal");
+    const scoreEl = document.getElementById("score");
+    const streakEl = document.getElementById("streak");
+    const topicEl = document.getElementById("topic");
+    const dotEl = document.getElementById("dot");
+    const questionEl = document.getElementById("question");
+    const choicesEl = document.getElementById("choices");
+    const explainEl = document.getElementById("explain");
+
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const shuffleBtn = document.getElementById("shuffleBtn");
+    const resetBtn = document.getElementById("resetBtn");
+
+    function shuffle(array){
+      for(let i=array.length-1;i>0;i--){
+        const j=Math.floor(Math.random()*(i+1));
+        [array[i],array[j]]=[array[j],array[i]];
+      }
+    }
+
+    function setDot(kind){
+      dotEl.className = "dot";
+      if(kind === "green") dotEl.classList.add("green");
+      if(kind === "warn") dotEl.classList.add("warn");
+    }
+
+    function render(){
+      qTotal.textContent = String(deck.length);
+      qNum.textContent = String(idx + 1);
+      scoreEl.textContent = String(score);
+      streakEl.textContent = String(streak);
+
+      const cur = deck[idx];
+      topicEl.textContent = cur.topic;
+      setDot(cur.dot || "warn");
+
+      questionEl.innerHTML = cur.q;
+      choicesEl.innerHTML = "";
+      explainEl.className = "explain";
+      explainEl.innerHTML = "";
+
+      const prev = answered.get(cur.id);
+
+      cur.choices.forEach((choiceText, i)=>{
+        const btn = document.createElement("button");
+        btn.className = "choice";
+        btn.type = "button";
+        btn.innerHTML = choiceText;
+
+        btn.onclick = ()=>{
+          // lock if already answered
+          if(answered.has(cur.id)) return;
+
+          const isCorrect = (i === cur.correct);
+          // mark styles
+          [...choicesEl.children].forEach((b, j)=>{
+            if(j === cur.correct) b.classList.add("correct");
+          });
+          if(!isCorrect) btn.classList.add("wrong");
+
+          answered.set(cur.id, {picked:i, correct:isCorrect});
+
+          if(isCorrect){ score += 1; streak += 1; }
+          else { streak = 0; }
+
+          scoreEl.textContent = String(score);
+          streakEl.textContent = String(streak);
+
+          explainEl.classList.add("show");
+          explainEl.innerHTML = `<strong>Explanation:</strong> ${cur.why}`;
+        };
+
+        choicesEl.appendChild(btn);
+      });
+
+      // If already answered, re-show markings + explanation
+      if(prev){
+        [...choicesEl.children].forEach((b, j)=>{
+          if(j === cur.correct) b.classList.add("correct");
+          if(j === prev.picked && !prev.correct) b.classList.add("wrong");
+        });
+        explainEl.classList.add("show");
+        explainEl.innerHTML = `<strong>Explanation:</strong> ${cur.why}`;
+      }
+
+      prevBtn.disabled = (idx === 0);
+      nextBtn.disabled = (idx === deck.length - 1);
+    }
+
+    function next(){ if(idx < deck.length - 1){ idx++; render(); } }
+    function prev(){ if(idx > 0){ idx--; render(); } }
+
+    prevBtn.onclick = prev;
+    nextBtn.onclick = next;
+
+    shuffleBtn.onclick = ()=>{
+      shuffle(deck);
+      idx = 0;
+      score = 0;
+      streak = 0;
+      answered.clear();
+      render();
+    };
+
+    resetBtn.onclick = ()=>{
+      deck = QUESTIONS.map((q, i) => ({...q, id:i}));
+      idx = 0;
+      score = 0;
+      streak = 0;
+      answered.clear();
+      render();
+    };
+
+    document.addEventListener("keydown",(e)=>{
+      if(e.target && (e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA")) return;
+      const k = e.key.toLowerCase();
+      if(k === "n") next();
+      if(k === "p") prev();
+      if(k === "s"){ shuffleBtn.click(); }
+      if(k === "r"){ resetBtn.click(); }
+    });
+
+    render();
+  </script>
+</body>
+</html>

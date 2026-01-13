@@ -4,11 +4,17 @@
 int main(){
 
     int a, b, sum;
+
+    int *pA = &a;
+
     printf("Enter 2 numbers \n");
     scanf("%d %d", &a, &b);
 
     sum = a + b;
     printf("Sum = %d\n", sum);
-
-    return 0;
+    printf("a = %d\n", *pA);
 }
+
+
+
+//Number Conversions binary / hex
