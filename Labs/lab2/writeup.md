@@ -18,9 +18,14 @@ cscd437main.c contains teh main function.
 
 3. (5 points) What are the type(s) and name(s) of parameter(s) being passed to main?
 
-
+- Types - int, and int pointer
+- Names - fillArray, printArray, cleanUp
 
 4. (5 points) Set a breakpoint on each function and display the breakpoints.
+
+
+
+
 5. (5 points) Begin running the program. How many arguments are passed to main?
 6. (5 points) Step twice and display the contents of the constant and two variables in main.
 7. (5 points) Step until you enter the first function called in main. What is the type and name of
