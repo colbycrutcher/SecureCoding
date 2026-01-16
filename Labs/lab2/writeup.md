@@ -1,6 +1,6 @@
 Colby Crutcher
 
-Lab2
+Lab 2
 
 Secure Coding
 
@@ -54,17 +54,47 @@ the constant? Where is the constant declared?
 
 9. (5 points) Instead of continuing this function, return to main and print the current line.
 
-- 
+- I used finish to get out of fillArray, annd rant he function until it returned to main. Then I printed the current line using 'list'.
+
+![](finish.png)
 
 10. (5 points) Step into the second function called from main. What is the name and starting value
 of the counting variable?
+
+- The function I stepped into is printArray, and the counting variable is named x, and starts at 0.
+
+![](printarr.png)
+
 11. (5 points) Use the disassemble command in GDB to display the assembly code for the function.
 What does the output show, and how does it correlate with the C source code?
-Page 2 of 2
+
+- It shows the dump and you can still see some addresses, jumps (about the extent of Assembly I know about) and the printArray function.
+
+![](assembly.png)
+
+
 12. (5 points) Delete the breakpoint for the first function called in main and disable the breakpoint
 for the last function called.
+
+-  ![](disable.png)
+
 13. (5 points) Without starting over, AKA your current location in a function that is not main, print
 the memory location of the first variable passed to main.
+
+- I was in cleanup, so I had to switch back to mains stack fram, and print the address of argc. 
+
+![](backtrace.png)
+
+
 14. (5 points) Print the information on the current running threads. How many threads are running?
+
+- There is 1 thread running. 
+
+![](thread.png)
+
 15. (5 points) Enable the breakpoint for the third function called by main. What is the type, name,
-and memory location of the variable passed to it?
+and memory location of the variable passed to it? 
+
+- The third function is cleanUp(&myArray). It is an int pointer. While in cleanup I printed the value using 'print myArray'.
+
+![](arr.png)
