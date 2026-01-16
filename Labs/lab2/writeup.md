@@ -18,20 +18,44 @@ cscd437main.c contains teh main function.
 
 3. (5 points) What are the type(s) and name(s) of parameter(s) being passed to main?
 
-- Types - int, and int pointer
-- Names - fillArray, printArray, cleanUp
+- Types - int, and char pointer
+- Names - int argc, and char**argv
 
 4. (5 points) Set a breakpoint on each function and display the breakpoints.
 
+![](breakpoints.png)
 
 
 
 5. (5 points) Begin running the program. How many arguments are passed to main?
+
+- argc = 1 was passed through main, and that is it.
+
+![](break1.png)
+
+
 6. (5 points) Step twice and display the contents of the constant and two variables in main.
+
+- int size = 4, and the int pointer myArray is null. 
+
+![](doublestep.png)
+
 7. (5 points) Step until you enter the first function called in main. What is the type and name of
 the constant? Where is the constant declared?
+
+- The constant is an int, name "MAX", and has a value of 9. It is declared globally in cybr437lab2.c
+
+![](constant.png)
+
 8. (5 points) Explain the difference between printing var and var[x]?
+
+- Printing var outputs the memory address, and printing var[x] will print the actual value at index x of the array. 
+
+
 9. (5 points) Instead of continuing this function, return to main and print the current line.
+
+- 
+
 10. (5 points) Step into the second function called from main. What is the name and starting value
 of the counting variable?
 11. (5 points) Use the disassemble command in GDB to display the assembly code for the function.
