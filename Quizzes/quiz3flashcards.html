@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GDB Flashcards</title>
+  <style>
+    :root { --bg:#0b1020; --card:#111a33; --card2:#0f1730; --text:#eaf0ff; --muted:#a9b6da; --accent:#7aa2ff; --border:rgba(255,255,255,.10); }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: radial-gradient(1200px 700px at 20% 0%, #17224a 0%, var(--bg) 55%);
+      color: var(--text);
+    }
+    header {
+      padding: 22px 16px 10px; max-width: 1100px; margin: 0 auto;
+    }
+    h1 { margin: 0 0 6px; font-size: 22px; letter-spacing: .2px; }
+    .sub { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.4; }
+    .bar {
+      display: grid; grid-template-columns: 1fr auto auto; gap: 10px;
+      margin-top: 14px; align-items: center;
+    }
+    input[type="search"]{
+      width: 100%; padding: 12px 12px; border-radius: 12px;
+      border: 1px solid var(--border); background: rgba(255,255,255,.06);
+      color: var(--text); outline: none;
+    }
+    input[type="search"]::placeholder{ color: rgba(234,240,255,.55); }
+    .btn{
+      padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border);
+      background: rgba(255,255,255,.06); color: var(--text); cursor: pointer;
+      transition: transform .05s ease, background .15s ease;
+      user-select: none;
+    }
+    .btn:hover { background: rgba(255,255,255,.10); }
+    .btn:active { transform: translateY(1px); }
+
+    main { max-width: 1100px; margin: 0 auto; padding: 12px 16px 26px; }
+    .meta {
+      display:flex; gap:10px; flex-wrap: wrap; align-items:center;
+      color: var(--muted); font-size: 13px; margin: 10px 0 14px;
+    }
+    .pill{
+      border:1px solid var(--border); padding: 6px 10px; border-radius: 999px;
+      background: rgba(255,255,255,.05);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      perspective: 1200px;
+      min-height: 170px;
+    }
+    .inner {
+      position: relative; width: 100%; height: 100%;
+      transform-style: preserve-3d;
+      transition: transform .5s ease;
+    }
+    .card.flipped .inner { transform: rotateY(180deg); }
+
+    .face {
+      position: absolute; inset: 0;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      padding: 14px 14px 12px;
+      backface-visibility: hidden;
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      box-shadow: 0 10px 25px rgba(0,0,0,.25);
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .front { background-color: var(--card); }
+    .back  { background-color: var(--card2); transform: rotateY(180deg); }
+
+    .tagrow { display:flex; justify-content: space-between; gap: 8px; align-items: center; }
+    .tag {
+      font-size: 11px; letter-spacing: .2px;
+      padding: 5px 8px; border-radius: 999px;
+      border: 1px solid var(--border); color: var(--muted);
+      background: rgba(0,0,0,.18);
+      white-space: nowrap;
+    }
+    .q { font-weight: 700; font-size: 14px; line-height: 1.35; }
+    .a { font-size: 13px; line-height: 1.45; color: rgba(234,240,255,.90); }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+    }
+    pre {
+      margin: 0; padding: 10px; border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,.22);
+      overflow: auto;
+      max-height: 210px;
+    }
+    .hint { margin-top: auto; color: rgba(234,240,255,.65); font-size: 12px; }
+    footer {
+      max-width: 1100px; margin: 0 auto; padding: 0 16px 20px;
+      color: rgba(234,240,255,.55); font-size: 12px;
+    }
+    kbd {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 11px; padding: 2px 6px; border-radius: 6px;
+      border: 1px solid var(--border); background: rgba(255,255,255,.06);
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>GDB Flashcards</h1>
+  <p class="sub">Click a card to flip. Search filters by question/answer/tags. Keyboard: <kbd>F</kbd> flip all, <kbd>R</kbd> reset, <kbd>/</kbd> focus search.</p>
+  <div class="bar">
+    <input id="search" type="search" placeholder="Search (e.g., breakpoint, bt, watch, step, gcc -g)..." />
+    <button class="btn" id="flipAll">Flip all</button>
+    <button class="btn" id="reset">Reset</button>
+  </div>
+</header>
+
+<main>
+  <div class="meta">
+    <span class="pill"><span id="countShown">0</span>/<span id="countTotal">0</span> shown</span>
+    <span class="pill">Tip: search <code>run</code> or <code>break</code></span>
+    <span class="pill">Focus: Intro + Quick Reference</span>
+  </div>
+
+  <section class="grid" id="grid"></section>
+</main>
+
+<footer>
+  Built from your “Intro to GDB” + “GDB Quick Reference” PDFs. Study strategy: learn the workflow cards first, then execution-control, then memory/stack, then break/watch.
+</footer>
+
+<script>
+  const cards = [
+    // --- Intro / Concepts ---
+    { tag:"Concept", q:"What is GDB?", a:"A command-line debugger (GNU Debugger) used mainly for C/C++ and other compiled languages to run programs step-by-step, set breakpoints, and inspect variables/memory to find bugs (like segfaults)."},
+    { tag:"Why", q:"Why use GDB instead of print statements?", a:"You can see exactly where the program stops working, inspect variable values at any time, debug segfaults/memory errors, and work efficiently without sprinkling prints everywhere."},
+    { tag:"How it works", q:"What does GDB operate on?", a:"Executable binaries produced by compilation. It can use debugging symbols to map machine instructions back to source lines."},
+    { tag:"Symbols", q:"Why compile with debug symbols?", a:"Debug symbols let GDB show source lines, function names, variables, and better stack traces. Without symbols, debugging is much harder."},
+    { tag:"Remote", q:"What is remote debugging in GDB?", a:"Debugging a program running on a different machine/target while controlling GDB locally."},
+    { tag:"Workflow", q:"Typical GDB workflow (high level)?", a:"1) Compile with -g, 2) start gdb ./prog, 3) set breakpoint, 4) run, 5) inspect state, 6) step/continue until you find the bug."},
+
+    // --- Starting / Stopping ---
+    { tag:"Start", q:"How do you start GDB with a program?", a:"Run: <pre>gdb ./program</pre>"},
+    { tag:"Start", q:"How do you compile for GDB debugging?", a:"Add debug symbols: <pre>gcc -g program.c -o program</pre>"},
+    { tag:"Quit", q:"How do you exit GDB?", a:"Use <pre>quit</pre> (or <pre>q</pre>, or EOF like Ctrl-D)."},
+    { tag:"Interrupt", q:"What does Ctrl-C do in GDB?", a:"Interrupts the current command or stops a running program so you regain control."},
+
+    // --- Running the program ---
+    { tag:"Run", q:"How do you run your program inside GDB?", a:"Use: <pre>run</pre> (or <pre>run arg1 arg2</pre> for arguments)."},
+    { tag:"Args", q:"How do you set arguments for the next run?", a:"Use: <pre>set args arg1 arg2</pre> then <pre>run</pre>."},
+    { tag:"Args", q:"How do you view current arguments?", a:"Use: <pre>show args</pre>"},
+    { tag:"Kill", q:"How do you stop (kill) the running program in GDB?", a:"Use: <pre>kill</pre>"},
+    { tag:"I/O", q:"How do you redirect input/output when running?", a:"Example: <pre>run &lt; input.txt &gt; output.txt</pre>"},
+
+    // --- Breakpoints / Watchpoints ---
+    { tag:"Breakpoints", q:"How do you set a breakpoint at a function?", a:"Use: <pre>break main</pre> (or <pre>b main</pre>)."},
+    { tag:"Breakpoints", q:"How do you set a breakpoint at a specific line?", a:"Use: <pre>break file.c:37</pre> or <pre>break 37</pre> (if current file)."},
+    { tag:"Breakpoints", q:"How do you set a breakpoint at an address?", a:"Use: <pre>break *0xADDRESS</pre>"},
+    { tag:"Conditional", q:"How do you make a conditional breakpoint?", a:"Use: <pre>break file.c:37 if x &gt; 5</pre> (breaks only when condition is true)."},
+    { tag:"Info", q:"How do you list breakpoints/watchpoints?", a:"Use: <pre>info break</pre> and <pre>info watch</pre>"},
+    { tag:"Delete", q:"How do you delete a breakpoint?", a:"Use: <pre>delete N</pre> (or <pre>delete</pre> to remove all)."},
+    { tag:"Disable", q:"How do you disable/enable a breakpoint?", a:"Use: <pre>disable N</pre> and <pre>enable N</pre>."},
+    { tag:"Temp", q:"What is a temporary breakpoint?", a:"A breakpoint that disables (or deletes) itself after it’s hit once. Use: <pre>tbreak location</pre>"},
+    { tag:"Watch", q:"What does a watchpoint do?", a:"Stops execution when an expression changes value. Use: <pre>watch expr</pre>"},
+
+    // --- Execution control (stepping) ---
+    { tag:"Step", q:"Difference between next and step?", a:"<pre>next (n)</pre> steps over function calls; <pre>step (s)</pre> steps into function calls."},
+    { tag:"Continue", q:"How do you resume execution after stopping?", a:"Use: <pre>continue</pre> (or <pre>c</pre>)."},
+    { tag:"Finish", q:"What does finish do?", a:"Runs until the current function returns, then stops at the caller."},
+    { tag:"Until", q:"What does until do?", a:"Runs until the next source line (or a specified location), often used to get out of loops quickly."},
+    { tag:"Instruction", q:"How do you step by machine instruction?", a:"Use <pre>stepi (si)</pre> to step into instructions, or <pre>nexti (ni)</pre> to step over calls at instruction level."},
+
+    // --- Stack / Backtrace ---
+    { tag:"Stack", q:"How do you see the call stack?", a:"Use: <pre>bt</pre> (backtrace)."},
+    { tag:"Frames", q:"How do you move between stack frames?", a:"Use: <pre>up</pre> to go to older frames, <pre>down</pre> to go to newer frames; <pre>frame N</pre> selects a specific frame."},
+    { tag:"Locals", q:"How do you view local variables in the current frame?", a:"Use: <pre>info locals</pre>"},
+    { tag:"Args", q:"How do you view function arguments in the current frame?", a:"Use: <pre>info args</pre>"},
+
+    // --- Inspecting data ---
+    { tag:"Print", q:"How do you print a variable/value?", a:"Use: <pre>print x</pre> (or <pre>p x</pre>)."},
+    { tag:"Formats", q:"How do you print in hex/decimal/etc.?", a:"Use a format: <pre>p/x x</pre> (hex), <pre>p/d x</pre> (signed decimal), <pre>p/t x</pre> (binary)."},
+    { tag:"Memory", q:"How do you examine raw memory?", a:"Use: <pre>x /Nuf ADDRESS</pre> (N=count, u=unit size b/h/w/g, f=format like x/d/s/i)."},
+    { tag:"Disasm", q:"How do you view machine instructions (disassembly)?", a:"Use: <pre>disassemble</pre> (optionally with an address range)."},
+    { tag:"Type", q:"How do you check the type of an expression?", a:"Use: <pre>whatis expr</pre> or <pre>ptype expr</pre> for more detail."},
+
+    // --- Listing / Source navigation ---
+    { tag:"Source", q:"How do you list source code around the current line?", a:"Use: <pre>list</pre> (or <pre>list -</pre> for previous lines)."},
+    { tag:"Source", q:"How do you list a function’s source in GDB?", a:"Use: <pre>list functionName</pre>"},
+    { tag:"Source path", q:"How do you add a directory to GDB’s source search path?", a:"Use: <pre>dir /path/to/src</pre> and view with <pre>show dir</pre>"},
+
+    // --- Convenience / display ---
+    { tag:"Display", q:"What does display do?", a:"Automatically prints an expression each time the program stops. Use: <pre>display expr</pre> and see them with <pre>info display</pre>."},
+    { tag:"Undisplay", q:"How do you stop auto-displaying an expression?", a:"Use: <pre>undisplay N</pre> (where N is the display item number)."},
+    { tag:"Set var", q:"How do you change a variable while debugging?", a:"Use: <pre>set var x = 42</pre> to modify program state."},
+
+    // --- Handy “environment / shell” ---
+    { tag:"Shell", q:"How do you run a shell command from inside GDB?", a:"Use: <pre>shell ls</pre> (or any shell command)."},
+    { tag:"PWD", q:"How do you check or change directories in GDB?", a:"Use: <pre>pwd</pre> to print working dir; <pre>cd path</pre> to change it."},
+    { tag:"Make", q:"How do you run make from inside GDB?", a:"Use: <pre>make</pre> (optionally with targets)."},
+  ];
+
+  const grid = document.getElementById("grid");
+  const search = document.getElementById("search");
+  const flipAllBtn = document.getElementById("flipAll");
+  const resetBtn = document.getElementById("reset");
+  const countShown = document.getElementById("countShown");
+  const countTotal = document.getElementById("countTotal");
+
+  countTotal.textContent = cards.length;
+
+  function esc(s){
+    return String(s)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;");
+  }
+
+  function cardMatches(card, term){
+    if(!term) return true;
+    const t = term.toLowerCase();
+    return (card.tag + " " + card.q + " " + card.a).toLowerCase().includes(t);
+  }
+
+  function render(){
+    const term = search.value.trim();
+    grid.innerHTML = "";
+    let shown = 0;
+
+    cards.forEach((c, idx) => {
+      if(!cardMatches(c, term)) return;
+      shown++;
+
+      const el = document.createElement("div");
+      el.className = "card";
+      el.dataset.index = idx;
+
+      el.innerHTML = `
+        <div class="inner">
+          <div class="face front">
+            <div class="tagrow">
+              <span class="tag">${esc(c.tag)}</span>
+              <span class="tag">#${idx+1}</span>
+            </div>
+            <div class="q">${esc(c.q)}</div>
+            <div class="hint">Click to flip →</div>
+          </div>
+          <div class="face back">
+            <div class="tagrow">
+              <span class="tag">${esc(c.tag)}</span>
+              <span class="tag">Answer</span>
+            </div>
+            <div class="a">${c.a}</div>
+            <div class="hint">Click to flip back ←</div>
+          </div>
+        </div>
+      `;
+
+      el.addEventListener("click", () => el.classList.toggle("flipped"));
+      grid.appendChild(el);
+    });
+
+    countShown.textContent = shown;
+  }
+
+  function setAll(flipped){
+    document.querySelectorAll(".card").forEach(c => c.classList.toggle("flipped", flipped));
+  }
+
+  search.addEventListener("input", render);
+
+  flipAllBtn.addEventListener("click", () => {
+    const anyNotFlipped = [...document.querySelectorAll(".card")].some(c => !c.classList.contains("flipped"));
+    setAll(anyNotFlipped);
+  });
+
+  resetBtn.addEventListener("click", () => {
+    search.value = "";
+    render();
+    setAll(false);
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "/" && document.activeElement !== search) {
+      e.preventDefault();
+      search.focus();
+    }
+    if (e.key.toLowerCase() === "f") setAll(true);
+    if (e.key.toLowerCase() === "r") {
+      search.value = "";
+      render();
+      setAll(false);
+    }
+    if (e.key === "Escape" && document.activeElement === search) search.blur();
+  });
+
+  render();
+</script>
+</body>
+</html>
