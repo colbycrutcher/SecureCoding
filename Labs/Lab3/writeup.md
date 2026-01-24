@@ -24,18 +24,37 @@ proper order)
 
 3. Start running the program. What are the contents of the first string in main? 
 
+- The first string is "This is a pwndbg program"
+
+![](pics/firststring.png)c
+
 4. Continue to the next breakpoint. What is the name and the value being passed into the 
 function called? 
 
+- This function is called simpleCounter. The value being passed into it is num = 3.
+
+![](pics/simplecounter.png)
+
+
 5. What function did you just come from and what function are you stopped in? 
 
+- We are in simpleCounter, and we came from main. 
+
 6. Disassemble this function you are stopped at and capture the output 
+
+![](pics/simplediss.png)
 
 7. How many print functions are in this current function you are stopped at?  
 Hint: There is more than one type of print statement. 
 
+- There are 4 print functions. There are 3 printf, and one putchar function.
+
 8. Examining the disassembled code, grab the memory address of the constant from the 
 function you’re stopped at and display its location in the process image. 
+
+- t
+
+![](pics/addr.png)
 
 9. Continue running (enter 15). What function are you currently stopped at, what is the 
 name and the value being passed into the function you are currently stopped at? 
