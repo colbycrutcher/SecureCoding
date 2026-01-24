@@ -3,24 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>GDB Flashcards</title>
+  <title>GDB + C Review Flashcards</title>
   <style>
-    :root { --bg:#0b1020; --card:#111a33; --card2:#0f1730; --text:#eaf0ff; --muted:#a9b6da; --accent:#7aa2ff; --border:rgba(255,255,255,.10); }
+    :root { --bg:#0b1020; --card:#111a33; --card2:#0f1730; --text:#eaf0ff; --muted:#a9b6da; --border:rgba(255,255,255,.10); --accent:#7aa2ff; }
     * { box-sizing: border-box; }
     body {
       margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       background: radial-gradient(1200px 700px at 20% 0%, #17224a 0%, var(--bg) 55%);
       color: var(--text);
     }
-    header {
-      padding: 22px 16px 10px; max-width: 1100px; margin: 0 auto;
-    }
+    header { padding: 22px 16px 10px; max-width: 1100px; margin: 0 auto; }
     h1 { margin: 0 0 6px; font-size: 22px; letter-spacing: .2px; }
     .sub { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.4; }
-    .bar {
-      display: grid; grid-template-columns: 1fr auto auto; gap: 10px;
-      margin-top: 14px; align-items: center;
-    }
+    .bar { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; margin-top: 14px; align-items: center; }
     input[type="search"]{
       width: 100%; padding: 12px 12px; border-radius: 12px;
       border: 1px solid var(--border); background: rgba(255,255,255,.06);
@@ -37,36 +32,17 @@
     .btn:active { transform: translateY(1px); }
 
     main { max-width: 1100px; margin: 0 auto; padding: 12px 16px 26px; }
-    .meta {
-      display:flex; gap:10px; flex-wrap: wrap; align-items:center;
-      color: var(--muted); font-size: 13px; margin: 10px 0 14px;
-    }
-    .pill{
-      border:1px solid var(--border); padding: 6px 10px; border-radius: 999px;
-      background: rgba(255,255,255,.05);
-    }
+    .meta { display:flex; gap:10px; flex-wrap: wrap; align-items:center; color: var(--muted); font-size: 13px; margin: 10px 0 14px; }
+    .pill{ border:1px solid var(--border); padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,.05); }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 14px;
-    }
-
-    .card {
-      perspective: 1200px;
-      min-height: 170px;
-    }
-    .inner {
-      position: relative; width: 100%; height: 100%;
-      transform-style: preserve-3d;
-      transition: transform .5s ease;
-    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+    .card { perspective: 1200px; min-height: 175px; }
+    .inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .5s ease; }
     .card.flipped .inner { transform: rotateY(180deg); }
 
     .face {
       position: absolute; inset: 0;
-      border-radius: 16px;
-      border: 1px solid var(--border);
+      border-radius: 16px; border: 1px solid var(--border);
       padding: 14px 14px 12px;
       backface-visibility: hidden;
       background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
@@ -86,22 +62,15 @@
     }
     .q { font-weight: 700; font-size: 14px; line-height: 1.35; }
     .a { font-size: 13px; line-height: 1.45; color: rgba(234,240,255,.90); }
-    code, pre {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: 12px;
-    }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 12px; }
     pre {
       margin: 0; padding: 10px; border-radius: 12px;
       border: 1px solid var(--border);
       background: rgba(0,0,0,.22);
-      overflow: auto;
-      max-height: 210px;
+      overflow: auto; max-height: 210px;
     }
     .hint { margin-top: auto; color: rgba(234,240,255,.65); font-size: 12px; }
-    footer {
-      max-width: 1100px; margin: 0 auto; padding: 0 16px 20px;
-      color: rgba(234,240,255,.55); font-size: 12px;
-    }
+    footer { max-width: 1100px; margin: 0 auto; padding: 0 16px 20px; color: rgba(234,240,255,.55); font-size: 12px; }
     kbd {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-size: 11px; padding: 2px 6px; border-radius: 6px;
@@ -111,10 +80,13 @@
 </head>
 <body>
 <header>
-  <h1>GDB Flashcards</h1>
-  <p class="sub">Click a card to flip. Search filters by question/answer/tags. Keyboard: <kbd>F</kbd> flip all, <kbd>R</kbd> reset, <kbd>/</kbd> focus search.</p>
+  <h1>GDB + C Review Flashcards</h1>
+  <p class="sub">
+    Click a card to flip. Search filters by question/answer/tags.
+    Keyboard: <kbd>F</kbd> flip all, <kbd>R</kbd> reset, <kbd>/</kbd> focus search.
+  </p>
   <div class="bar">
-    <input id="search" type="search" placeholder="Search (e.g., breakpoint, bt, watch, step, gcc -g)..." />
+    <input id="search" type="search" placeholder="Search (e.g., breakpoint, bt, watch, step, gcc -g, -E, extern, volatile)..." />
     <button class="btn" id="flipAll">Flip all</button>
     <button class="btn" id="reset">Reset</button>
   </div>
@@ -123,85 +95,131 @@
 <main>
   <div class="meta">
     <span class="pill"><span id="countShown">0</span>/<span id="countTotal">0</span> shown</span>
-    <span class="pill">Tip: search <code>run</code> or <code>break</code></span>
-    <span class="pill">Focus: Intro + Quick Reference</span>
+    <span class="pill">Try: <code>run</code>, <code>break</code>, <code>bt</code>, <code>watch</code>, <code>-E</code>, <code>static</code></span>
+    <span class="pill">Topics: GDB + C Compilation + Storage + Qualifiers</span>
   </div>
 
   <section class="grid" id="grid"></section>
 </main>
 
 <footer>
-  Built from your “Intro to GDB” + “GDB Quick Reference” PDFs. Study strategy: learn the workflow cards first, then execution-control, then memory/stack, then break/watch.
+  Fast study path: GDB workflow → break/step/bt → memory/stack → compilation phases → storage classes → qualifiers.
 </footer>
 
 <script>
   const cards = [
-    // --- Intro / Concepts ---
-    { tag:"Concept", q:"What is GDB?", a:"A command-line debugger (GNU Debugger) used mainly for C/C++ and other compiled languages to run programs step-by-step, set breakpoints, and inspect variables/memory to find bugs (like segfaults)."},
-    { tag:"Why", q:"Why use GDB instead of print statements?", a:"You can see exactly where the program stops working, inspect variable values at any time, debug segfaults/memory errors, and work efficiently without sprinkling prints everywhere."},
-    { tag:"How it works", q:"What does GDB operate on?", a:"Executable binaries produced by compilation. It can use debugging symbols to map machine instructions back to source lines."},
-    { tag:"Symbols", q:"Why compile with debug symbols?", a:"Debug symbols let GDB show source lines, function names, variables, and better stack traces. Without symbols, debugging is much harder."},
-    { tag:"Remote", q:"What is remote debugging in GDB?", a:"Debugging a program running on a different machine/target while controlling GDB locally."},
-    { tag:"Workflow", q:"Typical GDB workflow (high level)?", a:"1) Compile with -g, 2) start gdb ./prog, 3) set breakpoint, 4) run, 5) inspect state, 6) step/continue until you find the bug."},
+    // ==========================================================
+    // GDB (ALL original questions from the first flashcard set)
+    // ==========================================================
+    { tag:"Concept", q:"What is GDB?", a:"A command-line debugger (GNU Debugger) used mainly for C/C++ and other compiled languages to run programs step-by-step, set breakpoints, and inspect variables/memory to find bugs (like segfaults)." },
+    { tag:"Why", q:"Why use GDB instead of print statements?", a:"You can see exactly where the program stops working, inspect variable values at any time, debug segfaults/memory errors, and work efficiently without sprinkling prints everywhere." },
+    { tag:"How it works", q:"What does GDB operate on?", a:"Executable binaries produced by compilation. It can use debugging symbols to map machine instructions back to source lines." },
+    { tag:"Symbols", q:"Why compile with debug symbols?", a:"Debug symbols let GDB show source lines, function names, variables, and better stack traces. Without symbols, debugging is much harder." },
+    { tag:"Remote", q:"What is remote debugging in GDB?", a:"Debugging a program running on a different machine/target while controlling GDB locally." },
+    { tag:"Workflow", q:"Typical GDB workflow (high level)?", a:"1) Compile with -g, 2) start gdb ./prog, 3) set breakpoint, 4) run, 5) inspect state, 6) step/continue until you find the bug." },
 
-    // --- Starting / Stopping ---
-    { tag:"Start", q:"How do you start GDB with a program?", a:"Run: <pre>gdb ./program</pre>"},
-    { tag:"Start", q:"How do you compile for GDB debugging?", a:"Add debug symbols: <pre>gcc -g program.c -o program</pre>"},
-    { tag:"Quit", q:"How do you exit GDB?", a:"Use <pre>quit</pre> (or <pre>q</pre>, or EOF like Ctrl-D)."},
-    { tag:"Interrupt", q:"What does Ctrl-C do in GDB?", a:"Interrupts the current command or stops a running program so you regain control."},
+    { tag:"Start", q:"How do you start GDB with a program?", a:"Run:<pre>gdb ./program</pre>" },
+    { tag:"Start", q:"How do you compile for GDB debugging?", a:"Add debug symbols:<pre>gcc -g program.c -o program</pre>" },
+    { tag:"Quit", q:"How do you exit GDB?", a:"Use <pre>quit</pre> (or <pre>q</pre>, or EOF like Ctrl-D)." },
+    { tag:"Interrupt", q:"What does Ctrl-C do in GDB?", a:"Interrupts the current command or stops a running program so you regain control." },
 
-    // --- Running the program ---
-    { tag:"Run", q:"How do you run your program inside GDB?", a:"Use: <pre>run</pre> (or <pre>run arg1 arg2</pre> for arguments)."},
-    { tag:"Args", q:"How do you set arguments for the next run?", a:"Use: <pre>set args arg1 arg2</pre> then <pre>run</pre>."},
-    { tag:"Args", q:"How do you view current arguments?", a:"Use: <pre>show args</pre>"},
-    { tag:"Kill", q:"How do you stop (kill) the running program in GDB?", a:"Use: <pre>kill</pre>"},
-    { tag:"I/O", q:"How do you redirect input/output when running?", a:"Example: <pre>run &lt; input.txt &gt; output.txt</pre>"},
+    { tag:"Run", q:"How do you run your program inside GDB?", a:"Use: <pre>run</pre> (or <pre>run arg1 arg2</pre> for arguments)." },
+    { tag:"Args", q:"How do you set arguments for the next run?", a:"Use: <pre>set args arg1 arg2</pre> then <pre>run</pre>." },
+    { tag:"Args", q:"How do you view current arguments?", a:"Use: <pre>show args</pre>" },
+    { tag:"Kill", q:"How do you stop (kill) the running program in GDB?", a:"Use: <pre>kill</pre>" },
+    { tag:"I/O", q:"How do you redirect input/output when running?", a:"Example: <pre>run &lt; input.txt &gt; output.txt</pre>" },
 
-    // --- Breakpoints / Watchpoints ---
-    { tag:"Breakpoints", q:"How do you set a breakpoint at a function?", a:"Use: <pre>break main</pre> (or <pre>b main</pre>)."},
-    { tag:"Breakpoints", q:"How do you set a breakpoint at a specific line?", a:"Use: <pre>break file.c:37</pre> or <pre>break 37</pre> (if current file)."},
-    { tag:"Breakpoints", q:"How do you set a breakpoint at an address?", a:"Use: <pre>break *0xADDRESS</pre>"},
-    { tag:"Conditional", q:"How do you make a conditional breakpoint?", a:"Use: <pre>break file.c:37 if x &gt; 5</pre> (breaks only when condition is true)."},
-    { tag:"Info", q:"How do you list breakpoints/watchpoints?", a:"Use: <pre>info break</pre> and <pre>info watch</pre>"},
-    { tag:"Delete", q:"How do you delete a breakpoint?", a:"Use: <pre>delete N</pre> (or <pre>delete</pre> to remove all)."},
-    { tag:"Disable", q:"How do you disable/enable a breakpoint?", a:"Use: <pre>disable N</pre> and <pre>enable N</pre>."},
-    { tag:"Temp", q:"What is a temporary breakpoint?", a:"A breakpoint that disables (or deletes) itself after it’s hit once. Use: <pre>tbreak location</pre>"},
-    { tag:"Watch", q:"What does a watchpoint do?", a:"Stops execution when an expression changes value. Use: <pre>watch expr</pre>"},
+    { tag:"Breakpoints", q:"How do you set a breakpoint at a function?", a:"Use: <pre>break main</pre> (or <pre>b main</pre>)." },
+    { tag:"Breakpoints", q:"How do you set a breakpoint at a specific line?", a:"Use: <pre>break file.c:37</pre> or <pre>break 37</pre> (if current file)." },
+    { tag:"Breakpoints", q:"How do you set a breakpoint at an address?", a:"Use: <pre>break *0xADDRESS</pre>" },
+    { tag:"Conditional", q:"How do you make a conditional breakpoint?", a:"Use: <pre>break file.c:37 if x &gt; 5</pre> (breaks only when condition is true)." },
+    { tag:"Info", q:"How do you list breakpoints/watchpoints?", a:"Use: <pre>info break</pre> and <pre>info watch</pre>" },
+    { tag:"Delete", q:"How do you delete a breakpoint?", a:"Use: <pre>delete N</pre> (or <pre>delete</pre> to remove all)." },
+    { tag:"Disable", q:"How do you disable/enable a breakpoint?", a:"Use: <pre>disable N</pre> and <pre>enable N</pre>." },
+    { tag:"Temp", q:"What is a temporary breakpoint?", a:"A breakpoint that disables/deletes itself after it’s hit once. Use: <pre>tbreak location</pre>" },
+    { tag:"Watch", q:"What does a watchpoint do?", a:"Stops execution when an expression changes value. Use: <pre>watch expr</pre>" },
 
-    // --- Execution control (stepping) ---
-    { tag:"Step", q:"Difference between next and step?", a:"<pre>next (n)</pre> steps over function calls; <pre>step (s)</pre> steps into function calls."},
-    { tag:"Continue", q:"How do you resume execution after stopping?", a:"Use: <pre>continue</pre> (or <pre>c</pre>)."},
-    { tag:"Finish", q:"What does finish do?", a:"Runs until the current function returns, then stops at the caller."},
-    { tag:"Until", q:"What does until do?", a:"Runs until the next source line (or a specified location), often used to get out of loops quickly."},
-    { tag:"Instruction", q:"How do you step by machine instruction?", a:"Use <pre>stepi (si)</pre> to step into instructions, or <pre>nexti (ni)</pre> to step over calls at instruction level."},
+    { tag:"Step", q:"Difference between next and step?", a:"<pre>next (n)</pre> steps over function calls; <pre>step (s)</pre> steps into function calls." },
+    { tag:"Continue", q:"How do you resume execution after stopping?", a:"Use: <pre>continue</pre> (or <pre>c</pre>)." },
+    { tag:"Finish", q:"What does finish do?", a:"Runs until the current function returns, then stops at the caller." },
+    { tag:"Until", q:"What does until do?", a:"Runs until the next source line (or a specified location), often used to get out of loops quickly." },
+    { tag:"Instruction", q:"How do you step by machine instruction?", a:"Use <pre>stepi (si)</pre> to step into instructions, or <pre>nexti (ni)</pre> to step over calls at instruction level." },
 
-    // --- Stack / Backtrace ---
-    { tag:"Stack", q:"How do you see the call stack?", a:"Use: <pre>bt</pre> (backtrace)."},
-    { tag:"Frames", q:"How do you move between stack frames?", a:"Use: <pre>up</pre> to go to older frames, <pre>down</pre> to go to newer frames; <pre>frame N</pre> selects a specific frame."},
-    { tag:"Locals", q:"How do you view local variables in the current frame?", a:"Use: <pre>info locals</pre>"},
-    { tag:"Args", q:"How do you view function arguments in the current frame?", a:"Use: <pre>info args</pre>"},
+    { tag:"Stack", q:"How do you see the call stack?", a:"Use: <pre>bt</pre> (backtrace)." },
+    { tag:"Frames", q:"How do you move between stack frames?", a:"Use: <pre>up</pre> to go to older frames, <pre>down</pre> to go to newer frames; <pre>frame N</pre> selects a specific frame." },
+    { tag:"Locals", q:"How do you view local variables in the current frame?", a:"Use: <pre>info locals</pre>" },
+    { tag:"Args", q:"How do you view function arguments in the current frame?", a:"Use: <pre>info args</pre>" },
 
-    // --- Inspecting data ---
-    { tag:"Print", q:"How do you print a variable/value?", a:"Use: <pre>print x</pre> (or <pre>p x</pre>)."},
-    { tag:"Formats", q:"How do you print in hex/decimal/etc.?", a:"Use a format: <pre>p/x x</pre> (hex), <pre>p/d x</pre> (signed decimal), <pre>p/t x</pre> (binary)."},
-    { tag:"Memory", q:"How do you examine raw memory?", a:"Use: <pre>x /Nuf ADDRESS</pre> (N=count, u=unit size b/h/w/g, f=format like x/d/s/i)."},
-    { tag:"Disasm", q:"How do you view machine instructions (disassembly)?", a:"Use: <pre>disassemble</pre> (optionally with an address range)."},
-    { tag:"Type", q:"How do you check the type of an expression?", a:"Use: <pre>whatis expr</pre> or <pre>ptype expr</pre> for more detail."},
+    { tag:"Print", q:"How do you print a variable/value?", a:"Use: <pre>print x</pre> (or <pre>p x</pre>)." },
+    { tag:"Formats", q:"How do you print in hex/decimal/etc.?", a:"Use a format: <pre>p/x x</pre> (hex), <pre>p/d x</pre> (signed decimal), <pre>p/t x</pre> (binary)." },
+    { tag:"Memory", q:"How do you examine raw memory?", a:"Use: <pre>x /Nuf ADDRESS</pre> (N=count, u=unit size b/h/w/g, f=format like x/d/s/i)." },
+    { tag:"Disasm", q:"How do you view machine instructions (disassembly)?", a:"Use: <pre>disassemble</pre> (optionally with an address range)." },
+    { tag:"Type", q:"How do you check the type of an expression?", a:"Use: <pre>whatis expr</pre> or <pre>ptype expr</pre> for more detail." },
 
-    // --- Listing / Source navigation ---
-    { tag:"Source", q:"How do you list source code around the current line?", a:"Use: <pre>list</pre> (or <pre>list -</pre> for previous lines)."},
-    { tag:"Source", q:"How do you list a function’s source in GDB?", a:"Use: <pre>list functionName</pre>"},
-    { tag:"Source path", q:"How do you add a directory to GDB’s source search path?", a:"Use: <pre>dir /path/to/src</pre> and view with <pre>show dir</pre>"},
+    { tag:"Source", q:"How do you list source code around the current line?", a:"Use: <pre>list</pre> (or <pre>list -</pre> for previous lines)." },
+    { tag:"Source", q:"How do you list a function’s source in GDB?", a:"Use: <pre>list functionName</pre>" },
+    { tag:"Source path", q:"How do you add a directory to GDB’s source search path?", a:"Use: <pre>dir /path/to/src</pre> and view with <pre>show dir</pre>" },
 
-    // --- Convenience / display ---
-    { tag:"Display", q:"What does display do?", a:"Automatically prints an expression each time the program stops. Use: <pre>display expr</pre> and see them with <pre>info display</pre>."},
-    { tag:"Undisplay", q:"How do you stop auto-displaying an expression?", a:"Use: <pre>undisplay N</pre> (where N is the display item number)."},
-    { tag:"Set var", q:"How do you change a variable while debugging?", a:"Use: <pre>set var x = 42</pre> to modify program state."},
+    { tag:"Display", q:"What does display do?", a:"Automatically prints an expression each time the program stops. Use: <pre>display expr</pre> and see them with <pre>info display</pre>." },
+    { tag:"Undisplay", q:"How do you stop auto-displaying an expression?", a:"Use: <pre>undisplay N</pre> (where N is the display item number)." },
+    { tag:"Set var", q:"How do you change a variable while debugging?", a:"Use: <pre>set var x = 42</pre> to modify program state." },
 
-    // --- Handy “environment / shell” ---
-    { tag:"Shell", q:"How do you run a shell command from inside GDB?", a:"Use: <pre>shell ls</pre> (or any shell command)."},
-    { tag:"PWD", q:"How do you check or change directories in GDB?", a:"Use: <pre>pwd</pre> to print working dir; <pre>cd path</pre> to change it."},
-    { tag:"Make", q:"How do you run make from inside GDB?", a:"Use: <pre>make</pre> (optionally with targets)."},
+    { tag:"Shell", q:"How do you run a shell command from inside GDB?", a:"Use: <pre>shell ls</pre> (or any shell command)." },
+    { tag:"PWD", q:"How do you check or change directories in GDB?", a:"Use: <pre>pwd</pre> to print working dir; <pre>cd path</pre> to change it." },
+    { tag:"Make", q:"How do you run make from inside GDB?", a:"Use: <pre>make</pre> (optionally with targets)." },
+
+    // ==========================================================
+    // C Review Part III (incorporated)
+    // ==========================================================
+    { tag:"C Compile", q:"What is compilation (in general)?", a:"Compilation converts C source code into machine code through multiple phases." },
+    { tag:"C Compile", q:"What are the 4 phases of the C compilation process?", a:"1) Preprocessing  2) Compilation  3) Assembling  4) Linking." },
+
+    { tag:"C Preprocess", q:"What does the C preprocessor do?", a:"Removes comments, handles line breaks using <code>\\</code>, includes header contents (<code>#include</code>), expands macros (<code>#define</code>), and can do conditional compilation (<code>#ifdef</code>, etc.)." },
+    { tag:"C Preprocess", q:"What file is produced after preprocessing?", a:"A <code>.i</code> file (preprocessed file / translation unit)." },
+    { tag:"GCC Flag", q:"Which gcc option stops after preprocessing?", a:"Use <code>-E</code>:<pre>gcc -E test.c -o test.i</pre>" },
+
+    { tag:"C Compile", q:"What happens during the compilation phase?", a:"The compiler checks syntax and converts preprocessor output into assembly code." },
+    { tag:"C Compile", q:"What file is produced after compilation?", a:"A <code>.s</code> (or <code>.asm</code>) assembly file." },
+    { tag:"GCC Flag", q:"Which gcc option stops after compilation (produces .s)?", a:"Use <code>-S</code>:<pre>gcc -S test.c -o test.s</pre>" },
+
+    { tag:"C Assemble", q:"What happens during assembling?", a:"The assembler converts assembly code into machine code in an object file." },
+    { tag:"C Assemble", q:"What file is produced after assembling?", a:"A <code>.o</code> object file." },
+    { tag:"GCC Flag", q:"Which gcc option compiles/assembles to an object file (no linking)?", a:"Use <code>-c</code>:<pre>gcc -c test.c -o test.o</pre>" },
+
+    { tag:"C Link", q:"What happens during linking?", a:"The linker merges object files and links needed libraries to create the final executable." },
+    { tag:"Libraries", q:"Static vs dynamic libraries (big idea)?", a:"Static libraries are linked into the executable (bigger file). Dynamic/shared libraries are loaded at runtime (smaller exe, shared updates)." },
+    { tag:"Libraries", q:"What are typical static and dynamic library extensions?", a:"Static: <code>.a</code> (Unix/Linux), <code>.lib</code> (Windows). Dynamic: <code>.so</code> (Unix/Linux), <code>.dll</code> (Windows)." },
+    { tag:"Linking", q:"How do you link the math library in gcc?", a:"Add <code>-lm</code>:<pre>gcc test.c -o test -lm</pre>" },
+    { tag:"Binary", q:"What is an ELF file?", a:"Executable and Linkable Format — a common executable format on Unix/Linux systems." },
+
+    { tag:"Storage Class", q:"What do storage classes describe in C?", a:"They describe visibility/scope and lifetime of variables/functions (and hints about where they live: stack/data/bss/register)." },
+    { tag:"Storage Class", q:"What are the 4 common storage classes?", a:"<code>auto</code>, <code>extern</code>, <code>static</code>, <code>register</code>." },
+
+    { tag:"auto", q:"What is <code>auto</code> in C?", a:"Default for local variables in a block/function. Usually on the stack. Scope: inside the block. Lifetime: ends when the block ends." },
+    { tag:"auto", q:"What happens if an auto variable is not initialized?", a:"It can contain a garbage value (undefined initial value)." },
+
+    { tag:"extern", q:"What does <code>extern</code> mean?", a:"The variable is defined elsewhere (often in another file). It lets you reference a global variable across files." },
+    { tag:"extern", q:"Scope/lifetime of an extern variable (typical)?", a:"Global access (across files), lifetime for the entire program." },
+
+    { tag:"static", q:"What is a <code>static</code> local variable?", a:"It keeps its value between function calls. Scope is local to the function/block, but lifetime lasts until program termination." },
+    { tag:"static", q:"Where does an uninitialized static variable usually go?", a:"In the <code>bss</code> section (initialized to zero by the compiler/loader)." },
+    { tag:"static", q:"Where does an initialized static variable usually go?", a:"In the initialized data section (keeps its initialized value)." },
+
+    { tag:"register", q:"What is <code>register</code>?", a:"Like <code>auto</code> but suggests storing the variable in a CPU register if possible for faster access (compiler may ignore it)." },
+    { tag:"register", q:"What is a key limitation of <code>register</code> variables?", a:"You cannot take the address of a register variable (no <code>&amp;var</code>)." },
+
+    { tag:"Qualifier", q:"What is a type qualifier?", a:"It refines a variable/function/parameter declaration — e.g., whether the value can change, or how it should be read/stored." },
+    { tag:"const", q:"What does <code>const</code> mean?", a:"The object cannot be modified after initialization; attempts to change it should cause a compile-time error." },
+    { tag:"const", q:"Why is <code>const</code> useful?", a:"Prevents accidental modification and can enable optimizations (like placing data in read-only memory)." },
+
+    { tag:"volatile", q:"What does <code>volatile</code> mean?", a:"The value may change outside normal program flow; the compiler must fetch the current value from memory before use (avoid caching/optimizing it away)." },
+    { tag:"volatile", q:"When is <code>volatile</code> typically needed?", a:"Memory-mapped hardware registers, globals changed by interrupt service routines, and values that can change outside the current code path." },
+
+    { tag:"signed/unsigned", q:"What does <code>signed</code> vs <code>unsigned</code> control?", a:"How the sign bit is interpreted. <code>unsigned</code> stores only non-negative values and uses all bits for magnitude." },
+
+    // Bridge cards
+    { tag:"Bridge", q:"Why does compiling with <code>-g</code> matter for debugging?", a:"It keeps symbol/debug info so GDB can map machine code back to source lines, variables, and function names." },
+    { tag:"Bridge", q:"How do storage class + lifetime affect what you see in GDB?", a:"Locals (<code>auto</code>) may disappear after leaving scope; <code>static</code> values persist across calls; globals/<code>extern</code> live for the whole program and are always inspectable." }
   ];
 
   const grid = document.getElementById("grid");
@@ -284,7 +302,6 @@
     setAll(false);
   });
 
-  // Keyboard shortcuts
   document.addEventListener("keydown", (e) => {
     if (e.key === "/" && document.activeElement !== search) {
       e.preventDefault();
