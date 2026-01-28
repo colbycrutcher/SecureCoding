@@ -14,13 +14,18 @@ proper order)
 
 ![](pics/dump.png)
 
-- FILL THIS OUT!!!
+ 4 → main at cybr437lab2main.c:9
+ 
+ 5 → main at cybr437lab2main.c:23
+
+6 → simpleCounter at cybr437lab2.c:22
+
+7 → simpleIf at cybr437lab2.c:9
+
 
 2. Set a breakpoint at line 23 of main and on each of the two functions being called from main.
 
-- I attempted to set a breakpoint at line 23 of main. Because the program was not compiled with full debugging symbols, GDB resolved the breakpoint to line 9, which is the closest valid instruction within main. The breakpoint was still successfully set at the beginning of main
-
-![](pics/breaksq2.png)
+![](pics/fixedbps.png)
 
 3. Start running the program. What are the contents of the first string in main? 
 
@@ -52,7 +57,7 @@ Hint: There is more than one type of print statement.
 8. Examining the disassembled code, grab the memory address of the constant from the 
 function you’re stopped at and display its location in the process image. 
 
-- The location of teh constant is 0x555555556038
+- The location of the constant is 0x555555556038
 
 ![](pics/addr.png)
 
@@ -100,8 +105,12 @@ Hint: notice the value of s as it enters the function that is called twice.
 
 ![](pics/s.png)
 
+- The variable s is located on the stack and has automatic storage duration.
+
 15. Display 64 addresses of the stack (NOTE: this is not backtrace).
 
 ![](pics/64.png)
 
 # Part 2
+
+![](pics/pt2fix.png)

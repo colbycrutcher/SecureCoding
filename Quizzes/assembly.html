@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CYBR 437 — Assembly for C Flashcards</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    body { margin: 0; background: #0b0f19; color: #e9eefc; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 20px; }
+    h1 { font-size: 20px; margin: 0 0 10px; }
+    .sub { opacity: .85; margin-bottom: 18px; line-height: 1.35; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 12px 0 18px; }
+    button, select, input[type="checkbox"] { cursor: pointer; }
+    button {
+      background: #1a2550; border: 1px solid #2a3a7a; color: #e9eefc;
+      padding: 10px 12px; border-radius: 10px; font-weight: 600;
+    }
+    button:hover { filter: brightness(1.1); }
+    .pill {
+      background: #121a36; border: 1px solid #273564; border-radius: 999px;
+      padding: 8px 12px; display: inline-flex; gap: 10px; align-items: center;
+      color: #cfe0ff;
+    }
+    .pill small { opacity: .85; }
+    .card-area { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    .card-shell {
+      perspective: 1200px;
+      width: 100%;
+      min-height: 320px;
+    }
+    .card {
+      position: relative;
+      width: 100%;
+      min-height: 320px;
+      transform-style: preserve-3d;
+      transition: transform 300ms ease;
+      border-radius: 18px;
+    }
+    .card.flipped { transform: rotateY(180deg); }
+    .side {
+      position: absolute; inset: 0;
+      backface-visibility: hidden;
+      border-radius: 18px;
+      border: 1px solid #26355f;
+      background: radial-gradient(1200px 300px at 20% 0%, #1b2a5d 0%, #0f1428 55%, #0b0f19 100%);
+      padding: 18px 18px 14px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .back { transform: rotateY(180deg); }
+    .tagline { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; opacity: .9; }
+    .tag { font-size: 12px; background: #0e1633; border: 1px solid #273564; padding: 6px 10px; border-radius: 999px; }
+    .q { font-size: 22px; line-height: 1.25; margin-top: 4px; }
+    .a { font-size: 18px; line-height: 1.35; }
+    .hint { margin-top: auto; opacity: .8; font-size: 13px; line-height: 1.35; }
+    .kbd {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      background: #0a1026; border: 1px solid #26355f;
+      padding: 2px 6px; border-radius: 6px;
+    }
+    .footer {
+      margin-top: 16px;
+      display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; opacity: .85;
+    }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+    a { color: #9ec1ff; }
+    .toggle {
+      display: inline-flex; align-items: center; gap: 8px; user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>CYBR 437 — Assembly for C (Flashcards)</h1>
+    <div class="sub">
+      Click the card to flip. Use <span class="kbd">←</span>/<span class="kbd">→</span> to move,
+      <span class="kbd">Space</span> to flip. Content is based on your “Assembly for C” slides.
+    </div>
+
+    <div class="row">
+      <button id="prevBtn">← Prev</button>
+      <button id="flipBtn">Flip (Space)</button>
+      <button id="nextBtn">Next →</button>
+      <button id="shuffleBtn">Shuffle</button>
+      <button id="resetBtn">Reset Order</button>
+
+      <span class="pill">
+        <span><strong id="pos">1</strong>/<span id="total">1</span></span>
+        <small class="mono" id="topic">Topic</small>
+      </span>
+
+      <label class="toggle pill" title="In Quiz Mode, the answer side is hidden until you flip.">
+        <input type="checkbox" id="quizMode" />
+        <span>Quiz Mode</span>
+      </label>
+    </div>
+
+    <div class="card-area">
+      <div class="card-shell" id="cardShell">
+        <div class="card" id="card">
+          <div class="side front">
+            <div class="tagline">
+              <span class="tag" id="frontTag">Question</span>
+              <span class="tag mono" id="frontTopic">—</span>
+            </div>
+            <div class="q" id="frontText">Loading…</div>
+            <div class="hint" id="frontHint">
+              Tip: Explain it out loud like you’re teaching someone.
+            </div>
+          </div>
+
+          <div class="side back">
+            <div class="tagline">
+              <span class="tag" id="backTag">Answer</span>
+              <span class="tag mono" id="backTopic">—</span>
+            </div>
+            <div class="a" id="backText">—</div>
+            <div class="hint" id="backHint">
+              If you can connect it to C (variables, pointers, arrays, calls), you’re set.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div>Keys: <span class="kbd">Space</span> flip • <span class="kbd">←</span>/<span class="kbd">→</span> prev/next • <span class="kbd">S</span> shuffle • <span class="kbd">R</span> reset</div>
+      <div class="mono" id="sourceNote">Source: CYBR 437 “Assembly for C”</div>
+    </div>
+  </div>
+
+  <script>
+    // Flashcards derived from the slide deck topics:
+    // - What assembly is + why it matters
+    // - What disassembly shows
+    // - Registers + calling convention concepts
+    // - mov + addressing modes + variants
+    // - lea vs mov
+    const originalCards = [
+      { topic: "Assembly basics", q: "What is assembly (relative to machine code and C)?", a: "Assembly is a human-readable form of machine code. Compilers translate C (higher-level) into machine instructions; assembly shows those instructions in a readable textual form." },
+      { topic: "Assembly basics", q: "Why can multiple assembly instructions correspond to one C instruction?", a: "C abstracts away steps. The CPU needs explicit moves/arithmetic/branches, so a single C statement can compile into several lower-level operations." },
+      { topic: "Why assembly?", q: "Give 3 reasons learning assembly is useful in secure coding/reverse engineering.", a: "1) Read assembly and translate back to likely C.\n2) Understand how compiler turns code into machine instructions so you write safer/better code.\n3) Analyze program behavior without source (reverse engineering)." },
+      { topic: "Disassembly view", q: "In a disassembly of a function, what does the function label + address represent?", a: "It shows the function name (or symbol) and the starting memory address where that function’s machine code begins." },
+      { topic: "Disassembly view", q: "What do instruction addresses in disassembly tell you?", a: "They show where each instruction lives in memory. Sequential instructions are stored sequentially, so addresses usually increase as you move down the listing." },
+      { topic: "Disassembly view", q: "What is “machine code” in a disassembly listing?", a: "The raw bytes (often shown in hex) that encode the instruction. Different instructions can have different byte lengths." },
+      { topic: "Instructions", q: "Define opcode vs operands.", a: "Opcode is the operation name (e.g., mov, lea). Operands are the arguments (source/destination) the opcode acts on (registers, immediates, memory, etc.)." },
+      { topic: "Operands", q: "In AT&T syntax, what does $0x10 mean? What does %rax mean?", a: "$0x10 is an immediate constant value. %rax indicates a register operand (a CPU storage location)." },
+
+      { topic: "Registers", q: "What is a register and why is it “fast”?", a: "A register is small, fast CPU storage separate from main memory. It’s used like scratch space for calculations because accessing registers is much faster than RAM." },
+      { topic: "Registers", q: "Why do CPUs move data into registers before doing arithmetic?", a: "Most CPU instructions operate on registers, so values are loaded into registers, computed on, then stored back to memory if needed." },
+      { topic: "Registers", q: "What are two common non-arithmetic roles registers play in functions?", a: "Holding function parameters and holding function return values (per calling convention)." },
+
+      { topic: "x86-64 regs", q: "What does it mean that a register is 64-bit wide but has 32/16/8-bit “sub-registers”?", a: "You can address the lower portions of the same physical register (e.g., rax/eax/ax/al) to operate on smaller data sizes." },
+      { topic: "x86-64 regs", q: "What is the conventional purpose of %rsp and %rbp?", a: "%rsp is the stack pointer. %rbp is the base/frame pointer used to reference a stack frame (when a frame pointer is used)." },
+      { topic: "x86-64 regs", q: "Which register conventionally holds a function return value?", a: "%rax (return value register)." },
+
+      { topic: "Args/returns", q: "Which registers are used for the first six integer/pointer function arguments (SysV x86-64)?", a: "1st %rdi, 2nd %rsi, 3rd %rdx, 4th %rcx, 5th %r8, 6th %r9." },
+      { topic: "Ownership", q: "What does “callee-owned” vs “caller-owned” mean?", a: "Callee-owned (caller-saved) regs may be freely overwritten by the callee; the caller must save them if needed. Caller-owned (callee-saved) regs must be preserved by the callee if it uses them." },
+      { topic: "Ownership", q: "If a caller needs a value currently in %rax after calling a function, what must it do?", a: "Save/copy it to a safe place (another preserved register or the stack) before making the call, because %rax is callee-owned and may be overwritten." },
+      { topic: "Ownership", q: "If the callee wants to use a caller-owned register, what must it do?", a: "Preserve it (save original value, often by pushing to stack) and restore it before returning." },
+
+      { topic: "mov basics", q: "What does the mov instruction do? Give the general form.", a: "It copies bytes from source to destination (like assignment). Form: mov src, dst." },
+      { topic: "mov operands", q: "For mov, what kinds of operands can src/dst be?", a: "Immediate (constant; only valid as src), Register, or Memory location (at most one of src/dst can be memory)." },
+      { topic: "Addressing", q: "Immediate addressing: what does mov $0x10, dst do?", a: "Copies the constant value 0x10 into the destination (register or memory destination, as allowed)." },
+      { topic: "Addressing", q: "Register addressing: what does mov %rax, dst do?", a: "Copies the value currently in %rax into the destination." },
+      { topic: "Addressing", q: "Direct addressing: what does mov 0x503d0, dst mean (conceptually)?", a: "Uses an explicit memory address. It copies the value at memory address 0x503d0 into dst (or stores src into that address if used as destination)." },
+      { topic: "Addressing", q: "Indirect addressing: what does mov (%rbx), dst do?", a: "Treats %rbx as a pointer. It reads memory at the address stored in %rbx and copies that value into dst." },
+      { topic: "Addressing", q: "Indirect displacement: interpret 0x10(%rax).", a: "Effective address = (value in %rax) + 0x10. It’s like pointer + offset." },
+      { topic: "Addressing", q: "Indirect scaled-index: interpret 0x8(%rsp, %rcx, 4).", a: "Effective address = 0x8 + (%rsp) + (%rcx * 4). Common for arrays/struct indexing." },
+      { topic: "Addressing", q: "In scaled-index addressing, what are the default values if parts are omitted?", a: "Displacement/base/index default to 0 if omitted; scale defaults to 1." },
+
+      { topic: "C connection", q: "Why is indirect addressing similar to pointer dereferencing in C?", a: "Because it uses a register value as an address (like a pointer). Reading/writing memory at that address matches *ptr behavior." },
+      { topic: "C connection", q: "Translate: mov $0x42,(%rdi) into C-like meaning.", a: "It stores the byte/word/etc. 0x42 into the memory location pointed to by %rdi (like *ptr = 0x42;)." },
+      { topic: "C connection", q: "Translate: mov (%rax,%rcx,8),%rax into C-like meaning.", a: "It loads from memory at address (%rax + %rcx*8) into %rax — like x = arr[i] for an 8-byte element size." },
+
+      { topic: "mov variants", q: "What do suffixes b/w/l/q on mov mean?", a: "They specify operand size: byte (b), word 16-bit (w), long 32-bit (l), quad 64-bit (q)." },
+      { topic: "mov variants", q: "What’s special about movl to a register on x86-64?", a: "Writing with movl to a register zeroes the upper 32 bits of the 64-bit register." },
+      { topic: "movz/movs", q: "What do movz and movs do?", a: "They move a smaller source into a larger destination register. movz zero-extends; movs sign-extends using the source’s most significant bit." },
+      { topic: "movz/movs", q: "What are operand constraints for movz/movs?", a: "Source must be memory or register; destination must be a register (larger size)." },
+
+      { topic: "lea", q: "What does lea do (in one sentence)?", a: "lea loads the *effective address* (the computed address value) into a register, rather than loading the data stored at that address." },
+      { topic: "lea", q: "Key difference: mov vs lea when src looks like 0x6(%rax).", a: "mov reads memory at (%rax+6) and copies the *data* into dst; lea computes (%rax+6) and copies the *address value* into dst." },
+      { topic: "lea vs mov", q: "Interpret: (%rax,%rcx,4) with mov vs with lea (conceptually).", a: "mov: go to memory at (%rax + 4*%rcx) and load/store data.\nlea: compute (%rax + 4*%rcx) and put that computed number into a register." }
+    ];
+
+    let cards = originalCards.map(c => ({...c}));
+    let idx = 0;
+
+    const el = (id) => document.getElementById(id);
+    const cardEl = el("card");
+    const frontText = el("frontText");
+    const backText = el("backText");
+    const posEl = el("pos");
+    const totalEl = el("total");
+    const topicEl = el("topic");
+    const frontTopic = el("frontTopic");
+    const backTopic = el("backTopic");
+    const quizMode = el("quizMode");
+
+    function render() {
+      const c = cards[idx];
+      frontText.textContent = c.q;
+      backText.textContent = c.a;
+      posEl.textContent = String(idx + 1);
+      totalEl.textContent = String(cards.length);
+      topicEl.textContent = removesNewlines(c.topic);
+      frontTopic.textContent = c.topic;
+      backTopic.textContent = c.topic;
+
+      // In quiz mode, always show question side first.
+      if (quizMode.checked) cardEl.classList.remove("flipped");
+    }
+
+    function removesNewlines(s){ return String(s).replace(/\s+/g, " ").trim(); }
+
+    function flip() { cardEl.classList.toggle("flipped"); }
+    function next() { idx = (idx + 1) % cards.length; cardEl.classList.remove("flipped"); render(); }
+    function prev() { idx = (idx - 1 + cards.length) % cards.length; cardEl.classList.remove("flipped"); render(); }
+
+    function shuffle() {
+      // Fisher–Yates
+      for (let i = cards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [cards[i], cards[j]] = [cards[j], cards[i]];
+      }
+      idx = 0;
+      cardEl.classList.remove("flipped");
+      render();
+    }
+
+    function reset() {
+      cards = originalCards.map(c => ({...c}));
+      idx = 0;
+      cardEl.classList.remove("flipped");
+      render();
+    }
+
+    // Click to flip
+    el("cardShell").addEventListener("click", flip);
+
+    // Buttons
+    el("flipBtn").addEventListener("click", flip);
+    el("nextBtn").addEventListener("click", next);
+    el("prevBtn").addEventListener("click", prev);
+    el("shuffleBtn").addEventListener("click", shuffle);
+    el("resetBtn").addEventListener("click", reset);
+
+    // Keyboard controls
+    window.addEventListener("keydown", (e) => {
+      if (e.key === " " || e.code === "Space") { e.preventDefault(); flip(); }
+      else if (e.key === "ArrowRight") next();
+      else if (e.key === "ArrowLeft") prev();
+      else if (e.key.toLowerCase() === "s") shuffle();
+      else if (e.key.toLowerCase() === "r") reset();
+    });
+
+    quizMode.addEventListener("change", render);
+
+    // Init
+    render();
+  </script>
+</body>
+</html>
