@@ -4,6 +4,9 @@ Lab 4
 
 Secure Coding
 
+
+# Part 1
+
 1. 
 
 ![](image-1.png)
@@ -66,7 +69,6 @@ Store 0 into local stack slot -0xc → z = 0; (the “if” case)
 
 - mov $0x0,%eax → sets return value register to 0 → return 0;
 
-- 
 
 
 
@@ -88,4 +90,77 @@ int main(void) {
 ```
 
 
-3. ![](image-3.png)
+3. 
+
+![](image-3.png)
+
+- movq $0xa,-0x40(%rbp) → Stores 64-bit value 0x0a = 10 into stack slot -0x40.
+This corresponds to the first element of a local long array → arr[0] = 10;
+
+- movq $0x14,-0x38(%rbp) → Stores 64-bit value 0x14 = 20 into stack slot -0x38.
+This corresponds to → arr[1] = 20;
+
+- movq $0x1e,-0x30(%rbp) → Stores 64-bit value 0x1e = 30 into stack slot -0x30.
+This corresponds to → arr[2] = 30;
+
+- movq $0x28,-0x28(%rbp) → Stores 64-bit value 0x28 = 40 into stack slot -0x28.
+This corresponds to → arr[3] = 40;
+
+- movq $0x32,-0x20(%rbp) → Stores 64-bit value 0x32 = 50 into stack slot -0x20.
+This corresponds to → arr[4] = 50;
+
+- movq $0x0,-0x10(%rbp) → Stores 64-bit value 0 into stack slot -0x10.
+This initializes the loop counter → long i = 0;
+
+- jmp 0x555555555175 <main+76> → Unconditional jump to the loop condition check before executing the loop body. This is how a while or for loop is implemented in assembly.
+
+- mov -0x10(%rbp),%rax → Loads the current value of i into %rax → %rax = i;
+
+- mov -0x40(%rbp,%rax,8),%rax → Loads the value of arr[i] into %rax.
+Explanation: -0x40(%rbp) is the base address of the array, %rax is the index, and *8 accounts for 8-byte (long) elements.
+
+- add %rax,-0x8(%rbp) → Adds the value of arr[i] to the variable stored at -0x8(%rbp). This corresponds to → sum += arr[i];
+
+- addq $0x1,-0x10(%rbp) → Increments the loop counter stored at -0x10(%rbp) → i++;
+
+- cmpq $0x4,-0x10(%rbp) → compares the loop counter i to 4 by computing i - 4 and setting CPU flags. This prepares for a conditional loop check.
+
+- jle 0x555555555163 <main+58> → Jump if Less-or-Equal (signed). If i <= 4, control jumps back to the loop body, continuing the loop.
+
+- mov $0x0,%eax → Sets the return value register to 0 → return 0;
+
+
+```c
+int main(void) {
+    long arr[5] = {10, 20, 30, 40, 50};
+    long i = 0;
+    long sum = 0;          // this corresponds to -0x8(%rbp)
+
+    while (i <= 4) {
+        sum += arr[i];
+        i++;
+    }
+    return 0;
+}
+
+
+```
+
+4. 
+
+![](image-4.png)
+
+
+5. 
+
+![](image-5.png)
+
+![](image-6.png)
+
+![](image-7.png)
+
+
+# Part 2
+
+6. 
+
