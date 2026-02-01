@@ -7,14 +7,14 @@ Secure Coding
 
 1. (5 points) What type of file is this, and what kind of security does it have?
 
-- An exe file, and just has read permissions for regular users.
+- An exe file, and just has execute permissions for the user. It uses ELF security. There is no canary, pie is not enabled, partial RELRO, and NX is enabled.
 
 
 2. (5 points) What are the files that make up this binary, and which one contains main?
 
 - cscd437main.c, cybr437lab2.c, cybr437.h.
 
-cscd437main.c contains teh main function.
+cscd437main.c contains the main function.
 
 3. (5 points) What are the type(s) and name(s) of parameter(s) being passed to main?
 
@@ -68,7 +68,8 @@ of the counting variable?
 11. (5 points) Use the disassemble command in GDB to display the assembly code for the function.
 What does the output show, and how does it correlate with the C source code?
 
-- It shows the dump and you can still see some addresses, jumps (about the extent of Assembly I know about) and the printArray function.
+- The disassembly shows the compiled machine instructions for the function, including stack frame setup and teardown, comparisons and conditional jumps that implement the for loop, and calls to library functions such as printf. This correlates with the C source code because the loop and print statements are translated into compare, jump, and call instructions in assembly.
+
 
 ![](assembly.png)
 
