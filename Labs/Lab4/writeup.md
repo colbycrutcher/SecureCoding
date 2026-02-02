@@ -432,7 +432,7 @@ return 0;
 } 
 ```
 
-- Vulnerability: char buf[10]; but the loop runs for (i = 0; i <= 10; i++), which writes 11 bytes: buf[0] through buf[10]. buf[10] is out of bounds.
+- Vulnerability: char buf[10] arr is 10, but the loop runs for (i = 0; i <= 10; i++), which writes 11 bytes: buf[0] through buf[10]. buf[10] is out of bounds.
 
 ![Output](image-13.png)
 
@@ -457,3 +457,110 @@ int main() {
 - This works because i < 10 ensures the last write is buf[9], which is the final valid element.
 
 ![Fixed code output](image-14.png)
+
+
+
+9. 
+
+```c
+int fun (double *to, double *from, int pos, int n) 
+{ 
+int k; 
+for (k=0; k<n; k++) 
+{ 
+to[pos] = from[k]; 
+pos++; 
+} 
+return pos; 
+}
+
+```
+
+- Vulnerability: to[pos] = from[k] writes starting at pos for n elements without checking that pos and pos+n-1 are within the bounds of array to. If pos is near the end (or negative), it writes out of bounds
+
+- For my main function, I included an overflow test case, and a call that stays in bounds.
+
+```c
+#include <stdio.h>
+
+int fun(double *to, double *from, int pos, int n)
+{
+    int k;
+    for (k = 0; k < n; k++) {
+        to[pos] = from[k];
+        pos++;
+    }
+    return pos;
+}
+
+int main(void) {
+    double to[5]   = {0, 0, 0, 0, 0};
+    double from[5] = {1.1, 2.2, 3.3, 4.4, 5.5};
+
+    // Safe test case
+    fun(to, from, 1, 3);   // writes to[1..3]
+    printf("Safe:  %.1f %.1f %.1f %.1f %.1f\n", to[0], to[1], to[2], to[3], to[4]);
+
+    // Overflow test case (writes past to[4])
+    fun(to, from, 4, 3);   // tries to write to[4], to[5], to[6] (overflow)
+    printf("After overflow attempt: %.1f %.1f %.1f %.1f %.1f\n",
+           to[0], to[1], to[2], to[3], to[4]);
+
+    return 0;
+}
+
+```
+![Output with main function](image-15.png)
+
+### My fix:
+
+
+```c
+#include <stdio.h>
+
+int fun(double *to, int to_len, double *from, int pos, int n)
+{
+    int k;
+
+    // Clamp pos to valid range
+    if (pos < 0) pos = 0;
+    if (pos > to_len) pos = to_len;
+
+    // Clamp n so we never write past to[to_len-1]
+    if (n < 0) n = 0;
+    if (pos + n > to_len) {
+        n = to_len - pos;
+    }
+
+    for (k = 0; k < n; k++) {
+        to[pos] = from[k];
+        pos++;
+    }
+    return pos;
+}
+
+
+
+int main(void) {
+    double to[5]   = {0, 0, 0, 0, 0};
+    double from[5] = {1.1, 2.2, 3.3, 4.4, 5.5};
+
+    fun(to, 5, from, 1, 3);
+    printf("Safe:  %.1f %.1f %.1f %.1f %.1f\n", to[0], to[1], to[2], to[3], to[4]);
+
+    // Same overflow attempt now becomes safe (copy is clamped)
+    fun(to, 5, from, 4, 3);
+    printf("After clamped copy: %.1f %.1f %.1f %.1f %.1f\n",
+           to[0], to[1], to[2], to[3], to[4]);
+
+    return 0;
+}
+
+
+```
+
+
+- This works because instead of rejecting user input, it makes the function safe by clamping pos and n so the copy stays inside to[]
+
+
+![Revised code output](image-16.png)
