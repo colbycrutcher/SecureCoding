@@ -28,6 +28,9 @@ Store 64-bit value 0x2d = 45 → local 64-bit variable (long/long long) at -0x10
 
 - mov %rax, -0x10(%rbp) = This converts to c = (a + b) - c. It moves the final result from the register back into the memory location for variable `c`, updating its value.
 
+### Code in C:
+
+
 ```c
 int main(){
     int a = 25;      // 0x19
@@ -70,8 +73,7 @@ Store 0 into local stack slot -0xc → z = 0; (the “if” case)
 - mov $0x0,%eax → sets return value register to 0 → return 0;
 
 
-
-
+### Code in C:
 
 ```c
 int main(void) {
@@ -129,6 +131,8 @@ Explanation: -0x40(%rbp) is the base address of the array, %rax is the index, an
 
 - mov $0x0,%eax → Sets the return value register to 0 → return 0;
 
+### Code in C:
+
 
 ```c
 int main(void) {
@@ -151,6 +155,66 @@ int main(void) {
 ![](image-4.png)
 
 
+##### main:
+
+- movl $0x5,-0x4(%rbp) → stores 32-bit value 0x5 = 5 into local int → int a = 5;
+
+- movl $0x6,-0x8(%rbp) → stores 32-bit value 0x6 = 6 into local int → int b = 6;
+
+- mov -0x8(%rbp),%edx → loads b into %edx → %edx = b;
+
+- mov -0x4(%rbp),%eax → loads a into %eax → %eax = a;
+
+- mov %edx,%esi → copies %edx (b) into %esi (2nd integer argument register) → sets up arg2 → 2nd arg = b;
+
+- mov %eax,%edi → copies %eax (a) into %edi (1st integer argument register) → sets up arg1 → 1st arg = a;
+
+- call 0x555555555129 <fun> → calls fun(a, b) and gets the return value in %eax.
+
+- mov %eax,-0x4(%rbp) → stores return value back into local a → a = fun(a, b);
+
+- mov $0x0,%eax → sets return value to 0 → return 0;
+
+
+##### fun:
+
+- mov %edi,-0x4(%rbp) → stores the 1st argument into local int → x = arg1;
+
+- mov %esi,-0x8(%rbp) → stores the 2nd argument into local int → y = arg2;
+
+- mov -0x4(%rbp),%edx → loads x into %edx → %edx = x;
+
+- mov -0x8(%rbp),%eax → loads y into %eax → %eax = y;
+
+- add %edx,%eax → adds x into %eax → %eax = y + x; (so now %eax = x + y)
+
+- sub $0x1,%eax → subtracts 1 from %eax → %eax = (x + y) - 1;
+
+- ret (implied end) → returns with %eax holding the result → return (x + y) - 1;
+
+
+### Code in C:
+
+```c
+int fun(int x, int y) {
+    // fun returns the sum of the two args minus 1
+    return (x + y) - 1;
+}
+
+int main(void) {
+    int a = 5;
+    int b = 6;
+
+    // call fun(a, b) and store result back into a
+    a = fun(a, b);
+
+    return 0;
+}
+
+```
+
+
+
 5. 
 
 ![](image-5.png)
@@ -160,7 +224,109 @@ int main(void) {
 ![](image-7.png)
 
 
+##### main:
+- mov $0xa,%edx → loads the constant 0x0a (= 10) into %edx, which is used as the 3rd integer argument register → sets up arg3 = 10.
+
+- mov $0x14,%esi → loads the constant 0x14 (= 20) into %esi, which is the 2nd integer argument register → sets up arg2 = 20.
+
+- mov $0x1e,%edi → loads the constant 0x1e (= 30) into %edi, which is the 1st integer argument register → sets up arg1 = 30.
+
+- call 0x55555555514b <fun1> → calls the function fun1(arg1, arg2, arg3) using the calling convention registers → this corresponds to fun1(30, 20, 10);
+
+- mov $0x0,%eax → sets the return value register to 0 → return 0;
+
+
+```c
+int main(void) {
+    fun1(30, 20, 10);
+    return 0;
+}
+```
+
+
+##### fun1:
+
+- mov %rdi,-0x18(%rbp) → saves 1st argument → x = arg1;
+
+- mov %rsi,-0x20(%rbp) → saves 2nd argument → y = arg2;
+
+- mov %rdx,-0x28(%rbp) → saves 3rd argument → z = arg3;
+
+- mov -0x18(%rbp),%rax → loads x into %rax → %rax = x;
+
+- imul -0x20(%rbp),%rax → multiplies %rax by y → %rax = x * y;
+
+- mov -0x28(%rbp),%rdx → loads z into %rdx → %rdx = z;
+
+- imul %rdx,%rax → multiplies %rax by %rdx → %rax = (x * y) * z; (so %rax = x*y*z)
+
+- mov %rax,-0x8(%rbp) → stores the product into a local variable → prod = x*y*z;
+
+- Call fun2(x, prod)
+
+- mov -0x8(%rbp),%rdx → loads prod into %rdx → %rdx = prod;
+
+- mov -0x18(%rbp),%rax → loads x into %rax → %rax = x;
+
+- mov %rdx,%rsi → sets up 2nd argument register for the call → %rsi = prod;
+
+- mov %rax,%rdi → sets up 1st argument register for the call → %rdi = x;
+
+- call 0x555555555129 <fun2> → calls fun2(x, prod) which returns x - prod in %rax.
+
+- mov %rax,-0x8(%rbp) → stores return value from fun2 → result = fun2(x, prod);
+
+- mov -0x8(%rbp),%rax → loads result into %rax for return → return result;
+
+
+```c
+int fun1(int x, int y, int z) {
+    // Multiply all three arguments
+    int prod = x * y * z;
+
+    // Call fun2 with x and the product
+    // Returns x - (x * y * z)
+    return fun2(x, prod);
+}
+```
+
+
+##### fun2:
+
+- mov %rdi,-0x18(%rbp) → saves 1st argument (in %rdi) into a local variable → a = arg1;
+
+- mov %rsi,-0x20(%rbp) → saves 2nd argument (in %rsi) into a local variable → b = arg2;
+
+- mov -0x18(%rbp),%rax → loads a into %rax → %rax = a;
+
+- sub -0x20(%rbp),%rax → subtracts b from %rax → %rax = a - b; (this is the actual math)
+
+- mov %rax,-0x8(%rbp) → stores the result (a - b) into a local variable → result = a - b;
+
+- mov -0x8(%rbp),%rax → loads result back into %rax so it can be returned → return result;
+
+```c
+int fun2(int a, int b) {
+    // fun2 subtracts the second argument from the first
+    return a - b;
+}
+
+```
+
+
 # Part 2
 
 6. 
 
+```c
+#include <stdio.h> 
+int main() { 
+char city[10]; 
+printf("Enter city: "); 
+scanf("%s", city); 
+printf("City: %s\n", city); 
+return 0; 
+}
+```
+
+- scanf("%s", city); has no length limit, so any input longer than 9 characters (+ null terminator) will overflow char city[10] and can corrupt stack data (stack canary will likely detect this).
