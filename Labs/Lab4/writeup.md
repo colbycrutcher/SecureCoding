@@ -329,4 +329,4 @@ return 0;
 }
 ```
 
-- scanf("%s", city); has no length limit, so any input longer than 9 characters (+ null terminator) will overflow char city[10] and can corrupt stack data (stack canary will likely detect this).
+- scanf("%s", city); has no length limit, so any input longer than 9 characters (+ null terminator) will overflow char city[10] and can corrupt stack data (the stack canary will likely detect this).
