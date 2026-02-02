@@ -109,7 +109,7 @@ Hint: notice the value of s as it enters the function that is called twice.
 
 15. Display 64 addresses of the stack (NOTE: this is not backtrace).
 
-![](pics/64.png)
+![](pics/fixlast.png)
 
 # Part 2
 

@@ -329,4 +329,131 @@ return 0;
 }
 ```
 
-- scanf("%s", city); has no length limit, so any input longer than 9 characters (+ null terminator) will overflow char city[10] and can corrupt stack data (the stack canary will likely detect this).
+- Vulnerability: scanf("%s", city); has no length limit, so any input longer than 9 characters (+ null terminator) will overflow char city[10] and can corrupt stack data (the stack canary will likely detect this).
+
+- Some good test cases for this I used was Spokane, Seattle. Anything after more than 9 characters will cause a break so for a fail test I did 'notarealcitythisshouldfail' to get over the character limit.
+
+![Successful Test](image-9.png)
+
+![Failed test](image-8.png)
+
+### My Fix:
+
+```c
+#include <stdio.h>
+
+int main() {
+    char city[10];
+
+    printf("Enter city: ");
+
+    // Limit input to 9 chars + '\0'
+    scanf("%9s", city);
+
+    printf("City: %s\n", city);
+    return 0;
+}
+
+```
+
+- This works because %9s tells scanf to read at most 9 characters, leaving room for the '\0' terminator, preventing buffer overflow.
+
+
+7. 
+
+```c
+# include <stdio.h> 
+int main() 
+{ 
+char buf[8]; 
+int i = 0; 
+char c; 
+while ((c = getchar()) != '\n') { 
+buf[i++] = c; 
+} 
+buf[i] = '\0'; 
+printf("%s\n", buf); 
+return 0; 
+}
+
+```
+
+- Vulnurability: buf is only 8 bytes, but the loop keeps writing buf[i++] = c; until newline with no bounds check, so long lines overflow buf. Also, buf[i] = '\0' can write out of bounds if i >= 8.
+
+- For a safe input I just put the string 'hello', and it worked fine. To create an overflow, I did 'ABCDEFGHIJKL', which is 12 characters causing an 'abort'
+
+![Working](image-11.png)
+
+![Overflow](image-10.png)
+
+### My fix:
+
+```c
+#include <stdio.h>
+
+int main() {
+    char buf[8];
+    int i = 0;
+    int c;
+
+    while ((c = getchar()) != '\n' && c != EOF) {
+        if (i < (int)sizeof(buf) - 1) {
+            buf[i++] = (char)c;
+        } 
+        // else: ignore extra chars until newline
+    }
+
+    buf[i] = '\0';
+    printf("%s\n", buf);
+    return 0;
+}
+
+```
+
+- This works because the code only writes if i < sizeof(buf)-1, leaving space for '\0'. Extra characters are safely ignored until newline, so no overwrite happens. If you want it to accept more characters, just change the size of buf. 
+
+![Working output(changed the buff size)](image-12.png)
+
+
+8. 
+
+```c
+#include <stdio.h> 
+int main() 
+{ 
+char buf[10]; 
+int i; 
+ 
+for (i = 0; i <= 10; i++) 
+buf[i] = 'A'; 
+ 
+printf("Done\n"); 
+return 0; 
+} 
+```
+
+- Vulnerability: char buf[10]; but the loop runs for (i = 0; i <= 10; i++), which writes 11 bytes: buf[0] through buf[10]. buf[10] is out of bounds.
+
+![Output](image-13.png)
+
+### My fix:
+
+```c
+#include <stdio.h>
+
+int main() {
+    char buf[10];
+    int i;
+
+    for (i = 0; i < 10; i++)
+        buf[i] = 'A';
+
+    printf("Done\n");
+    return 0;
+}
+
+```
+
+- This works because i < 10 ensures the last write is buf[9], which is the final valid element.
+
+![Fixed code output](image-14.png)
