@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CYBR 437 – Local Buffer Overflow Exploits</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: #e5e7eb;
+  padding: 20px;
+}
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+.card {
+  perspective: 1000px;
+}
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+  cursor: pointer;
+}
+.card:hover .card-inner {
+  transform: rotateY(180deg);
+}
+.card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 12px;
+  padding: 15px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.front {
+  background: #1e293b;
+  font-weight: bold;
+}
+.back {
+  background: #334155;
+  transform: rotateY(180deg);
+  font-size: 0.95em;
+}
+</style>
+</head>
+
+<body>
+<h1>CYBR 437 – Local Buffer Overflow Exploits</h1>
+
+<div class="container">
+
+<div class="card"><div class="card-inner">
+<div class="card-face front">What is a buffer overflow?</div>
+<div class="card-face back">
+When a program writes more data to a buffer than it was allocated, overwriting adjacent memory.
+</div>
+</div></div>
+
+<div class="card"><div class="card-inner">
+<div class="card-face front">Why are buffer overflows dangerous?</div>
+<div class="card-face back">
+They can overwrite control data (like return addresses) and allow attackers to execute arbitrary code.
+</div>
+</div></div>
+
+<div class="card"><div class="card-inner">
+<div class="card-face front">What is privilege escalation?</div>
+<div class="card-face back">
+When an attacker gains higher privileges (e.g., root) than they were originally allowed.
+</div>
+</div></div>
+
+<div class="card"><div class="card-inner">
+<div class="card-face front">What are SUID and SGID?</div>
+<div class="card-face back">
+Mechanisms that allow a program to run with the privileges of its file owner or group.
+</div>
+</div></div>
+
+<div class="card"><div class="card-inner">
+<div class="card-face front">Why are SUID programs high-risk?</div>
+<div class="card-face back">
+If vulnerable, a buffer overflow can grant attackers elevated (often root) privileges.
+</div>
+</div></div>
+
+<div class="card"><div class="card-inner">
+<div class="card-face front">Main goal of a stack overflow exploit?</div>
+<div class="card-face back">
+Control the instruction pointer (EIP/RIP) to execute attacker-controlled code.
+</div>
+</div></div>
+
+<div class="card"><div class="card-inner">
+<div class="card-face front">Three main components of an exploit</div>
+<div class="card-face back">
+NOP sled, shellcode, and a return address.
+</div>
+</div></div>
+
+<div class="card"><div class="card-inner">
+<div class="card-face front">What is a NOP sled?</div>
+<div class="card-face back">
+A sequence of NOP instructions that slide execution into the shellcode.
+</div>
+</div></div>
+
+<div class="card"><div class="card-inner">
+<div class="card-face front">Why use a NOP sled?</div>
+<div class="card-face back">
+It increases exploit reliability when the exact shellcode address is unknown.
+</div>
+</div></div>
+
+<div class="card"><div class="card-inner">
+<div class="card-face front">NOP opcode on x86</div>
+<div class="card-face back">
+0x90
+</div>
+</div></div>
+
+<div class="card"><div class="card-inner">
+<div class="card-face front">What is shellcode?</div>
+<div class="card-face back">
+Machine code used to perform the attacker’s desired action.
+</div>
+</div></div>
+
+<div class="card"><div class="card-inner">
+<div class="card-face front">Early purpose of shellcode</div>
+<div class="card-face back">
+Spawn a command shell for the attacker.
+</div>
+</div></div>
+
+<div class="card"><div class="card-inner">
+<div class="card-face front">Modern shellcode can…</div>
+<div class="card-face back">
+Escalate privileges, run commands, download malware, etc.
+</div>
+</div></div>
+
+<div class="card"><div class="card-inner">
+<div class="card-face front">Shellcode representation</div>
+<div class="card-face back">
+A sequence of architecture-specific binary opcodes, often shown in hex.
+</div>
+</div></div>
+
+<div class="card"><div class="card-inner">
+<div class="card-face front">What does strcpy() risk?</div>
+<div class="card-face back">
+It does not check bounds, making it vulnerable to buffer overflows.
+</div>
+</div></div>
+
+<div class="card"><div class="card-inner">
+<div class="card-face front">Two categories of defenses</div>
+<div class="card-face back">
+Compile-time defenses and run-time defenses.
+</div>
+</div></div>
+
+<div class="card"><div class="card-inner">
+<div class="card-face front">Compile-time defenses are handled by…</div>
+<div class="card-face back">
+The compiler.
+</div>
+</div></div>
+
+<div class="card"><div class="card-inner">
+<div class="card-face front">Example of compile-time defense</div>
+<div class="card-face back">
+Stack canaries (StackGuard).
+</div>
+</div></div>
+
+<div class="card"><div class="card-inner">
+<div class="card-face front">What is a stack canary?</div>
+<div class="card-face back">
+A value placed on the stack that is checked before function return to detect corruption.
+</div>
+</div></div>
+
+<div class="card"><div class="card-inner">
+<div class="card-face front">Run-time defenses are handled by…</div>
+<div class="card-face back">
+The operating system and processor.
+</div>
+</div></div>
+
+<div class="card"><div class="card-inner">
+<div class="card-face front">NX bit purpose</div>
+<div class="card-face back">
+Marks memory pages as non-executable to block injected code execution.
+</div>
+</div></div>
+
+<div class="card"><div class="card-inner">
+<div class="card-face front">What is ASLR?</div>
+<div class="card-face back">
+Randomizes memory addresses to make exploits unreliable.
+</div>
+</div></div>
+
+<div class="card"><div class="card-inner">
+<div class="card-face front">What are guard pages?</div>
+<div class="card-face back">
+Invalid memory gaps that crash a program if accessed.
+</div>
+</div></div>
+
+</div>
+</body>
+</html>
