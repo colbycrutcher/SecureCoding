@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CYBR 437 Midterm Flashcards (Quizzes 2–5, Labs 1–5)</title>
+  <style>
+    :root { --bg:#0b1220; --card:#121b2f; --muted:#9fb0d0; --text:#e9f0ff; --accent:#7aa2ff; --good:#2dd4bf; --bad:#fb7185; }
+    * { box-sizing: border-box; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; }
+    body { margin:0; background: radial-gradient(1200px 700px at 20% 0%, #172554 0%, var(--bg) 55%); color:var(--text); }
+    header { padding: 20px 16px 8px; max-width: 1100px; margin: 0 auto; }
+    h1 { font-size: 18px; margin: 0 0 6px; letter-spacing: .2px; }
+    .sub { color: var(--muted); font-size: 13px; line-height: 1.35; }
+    main { max-width: 1100px; margin: 0 auto; padding: 12px 16px 28px; display: grid; gap: 14px; grid-template-columns: 320px 1fr; }
+    @media (max-width: 900px){ main{ grid-template-columns: 1fr; } }
+    .panel { background: rgba(18,27,47,.85); border: 1px solid rgba(122,162,255,.18); border-radius: 14px; padding: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+    .row { display:flex; gap:10px; align-items:center; flex-wrap: wrap; }
+    label { font-size: 12px; color: var(--muted); }
+    select, input[type="search"]{
+      width:100%; padding:10px 10px; border-radius: 12px; border: 1px solid rgba(122,162,255,.22);
+      background: rgba(11,18,32,.65); color: var(--text);
+      outline:none;
+    }
+    .btn {
+      padding:10px 12px; border-radius: 12px; border:1px solid rgba(122,162,255,.25);
+      background: rgba(11,18,32,.55); color: var(--text);
+      cursor:pointer; user-select:none;
+    }
+    .btn:hover { border-color: rgba(122,162,255,.55); }
+    .btn.primary { background: rgba(122,162,255,.18); border-color: rgba(122,162,255,.55); }
+    .btn.good { border-color: rgba(45,212,191,.55); }
+    .btn.bad  { border-color: rgba(251,113,133,.55); }
+    .stat { font-size: 12px; color: var(--muted); }
+    .progress {
+      height: 10px; background: rgba(255,255,255,.08); border-radius: 999px; overflow:hidden;
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .bar { height:100%; width:0%; background: linear-gradient(90deg, rgba(122,162,255,.8), rgba(45,212,191,.75)); }
+    .cardWrap { display:flex; flex-direction: column; gap:12px; }
+    .card {
+      min-height: 340px;
+      background: linear-gradient(180deg, rgba(18,27,47,.92), rgba(18,27,47,.75));
+      border: 1px solid rgba(122,162,255,.22);
+      border-radius: 16px;
+      padding: 16px;
+      position: relative;
+      overflow:hidden;
+    }
+    .tag {
+      display:inline-flex; gap:8px; align-items:center;
+      padding: 6px 10px; border-radius: 999px;
+      background: rgba(122,162,255,.14);
+      border:1px solid rgba(122,162,255,.22);
+      color: var(--muted); font-size: 12px;
+    }
+    .q { margin-top: 12px; font-size: 18px; line-height: 1.35; }
+    .hint { margin-top: 10px; color: var(--muted); font-size: 13px; }
+    .answer {
+      margin-top: 14px;
+      padding: 12px;
+      background: rgba(11,18,32,.45);
+      border: 1px dashed rgba(122,162,255,.28);
+      border-radius: 14px;
+      display:none;
+      white-space: pre-wrap;
+      line-height: 1.4;
+    }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono"; font-size: 11px;
+      padding: 2px 6px; border:1px solid rgba(255,255,255,.16); border-bottom-width:2px; border-radius: 6px; color: var(--muted);
+      background: rgba(0,0,0,.15);
+    }
+    .footerTip { color: var(--muted); font-size: 12px; line-height: 1.4; }
+    .small { font-size: 12px; color: var(--muted); }
+    .grid2 { display:grid; gap:10px; grid-template-columns: 1fr 1fr; }
+    @media (max-width: 520px){ .grid2{ grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>CYBR 437 Midterm Flashcards</h1>
+  <div class="sub">
+    Built for short-answer, closed-book practice: hex, pointers, storage classes, x86-64 addressing, stack/calls, buffer overflow + unsafe C functions.
+  </div>
+</header>
+
+<main>
+  <!-- Controls -->
+  <section class="panel">
+    <div class="row" style="justify-content:space-between;">
+      <div class="stat" id="deckStat">Deck: 0 cards</div>
+      <div class="stat" id="scoreStat">Known: 0 | Review: 0</div>
+    </div>
+
+    <div style="margin:10px 0 8px;">
+      <div class="progress"><div class="bar" id="bar"></div></div>
+      <div class="row" style="justify-content:space-between; margin-top:6px;">
+        <div class="stat" id="progressStat">0 / 0</div>
+        <div class="stat">Shuffle on load ✓</div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div>
+        <label for="topic">Topic</label>
+        <select id="topic"></select>
+      </div>
+      <div>
+        <label for="mode">Mode</label>
+        <select id="mode">
+          <option value="all">All cards</option>
+          <option value="review">Only “Review” cards</option>
+          <option value="unknown">Only “Unseen” cards</option>
+          <option value="known">Only “Known” cards</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-top:10px;">
+      <label for="search">Search (question/answer)</label>
+      <input id="search" type="search" placeholder="e.g., lea, canary, extern, 0x8(%rsp,%rcx,4)" />
+    </div>
+
+    <div class="row" style="margin-top:12px;">
+      <button class="btn primary" id="flipBtn">Flip <span class="kbd">Space</span></button>
+      <button class="btn" id="prevBtn">Prev <span class="kbd">←</span></button>
+      <button class="btn" id="nextBtn">Next <span class="kbd">→</span></button>
+    </div>
+
+    <div class="row" style="margin-top:10px;">
+      <button class="btn good" id="knownBtn">Mark Known <span class="kbd">K</span></button>
+      <button class="btn bad" id="reviewBtn">Needs Review <span class="kbd">R</span></button>
+      <button class="btn" id="resetBtn">Reset Progress</button>
+    </div>
+
+    <hr style="border:0; border-top:1px solid rgba(255,255,255,.08); margin:14px 0;" />
+
+    <div class="footerTip">
+      Quick flow (10–15 min): pick a topic → go through cards → hit <span class="kbd">R</span> for misses →
+      switch Mode to “Review” and repeat until clean.
+      <div class="small" style="margin-top:8px;">
+        Tip: For paper short-answer, practice saying the answer out loud in 1–2 sentences.
+      </div>
+    </div>
+  </section>
+
+  <!-- Card -->
+  <section class="panel cardWrap">
+    <div class="card" id="card">
+      <div class="row" style="justify-content:space-between; align-items:flex-start;">
+        <div class="tag" id="tag">Topic</div>
+        <div class="stat" id="status">Status: Unseen</div>
+      </div>
+
+      <div class="q" id="q">Loading…</div>
+      <div class="hint" id="hint"></div>
+      <div class="answer" id="a"></div>
+
+      <div class="row" style="justify-content:space-between; margin-top:14px;">
+        <div class="stat" id="indexStat"></div>
+        <div class="stat">Flip: <span class="kbd">Space</span> • Known: <span class="kbd">K</span> • Review: <span class="kbd">R</span></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+/**
+ * Flashcards are intentionally "study-only" (defensive/understanding). No step-by-step exploitation instructions.
+ * Topics match your professor’s list.
+ */
+const CARDS = [
+  // ===================== HEX =====================
+  { topic:"Hex", q:"What does '0x' mean in C/assembly notation?", a:"It denotes a hexadecimal (base-16) literal.", hint:"Paper exam: say 'hex literal prefix'." },
+  { topic:"Hex", q:"How many bits are represented by 1 hex digit?", a:"4 bits (a nibble).", hint:"Because 16 = 2^4." },
+  { topic:"Hex", q:"Convert 0x3F to decimal.", a:"0x3F = 3×16 + 15 = 63.", hint:"Break into place values." },
+  { topic:"Hex", q:"Convert decimal 42 to hex.", a:"42 / 16 = 2 remainder 10 (A) → 0x2A.", hint:"Remainder mapping: 10=A." },
+  { topic:"Hex", q:"Do this hex add: 0x2A + 0x19.", a:"0x2A + 0x19 = 0x43. (A+9=0x13 carry 1; 2+1+1=4).", hint:"Add rightmost nibble first." },
+  { topic:"Hex", q:"What is a 'byte' in hex notation?", a:"A byte is 8 bits → exactly two hex digits (00–FF).", hint:"1 hex digit=4 bits." },
+
+  // ===================== POINTERS =====================
+  { topic:"Pointers", q:"What does '&x' mean in C?", a:"The address-of operator: returns the memory address where x is stored.", hint:"Type becomes 'pointer to type-of-x'." },
+  { topic:"Pointers", q:"What does '*p' mean when p is a pointer?", a:"Dereference: access the value stored at the memory address p points to.", hint:"Think 'follow the arrow'." },
+  { topic:"Pointers", q:"If int *p points to arr[0], what address does p+1 point to?", a:"It points to the next int: address increases by sizeof(int) bytes.", hint:"Pointer arithmetic scales by element size." },
+  { topic:"Pointers", q:"Explain why (char*) arithmetic is used for raw byte offsets.", a:"Because sizeof(char)=1, so adding N advances exactly N bytes.", hint:"Useful for byte-wise offsets." },
+  { topic:"Pointers", q:"State the identity that relates arrays and pointers in C.", a:"arr[i] is equivalent to *(arr + i).", hint:"Same idea as indirect addressing in assembly." },
+  { topic:"Pointers", q:"What does it mean when printf uses %p?", a:"It prints a pointer value (an address).", hint:"Typically shown in hex." },
+
+  // ===================== STORAGE CLASSES =====================
+  { topic:"Storage Classes", q:"What is the default storage class for local variables in a block?", a:"auto (usually implicit).", hint:"Rarely written explicitly." },
+  { topic:"Storage Classes", q:"What does 'extern' mean for a variable declaration?", a:"The variable is defined elsewhere; this declaration refers to that external/global definition.", hint:"Often used across files." },
+  { topic:"Storage Classes", q:"What’s special about a 'static' local variable inside a function?", a:"It keeps its value between calls; lifetime is the entire program, but scope is the function.", hint:"Initialized once." },
+  { topic:"Storage Classes", q:"Why can’t you take the address of a 'register' variable (historically)?", a:"Because it may be stored in a CPU register (no stable memory address).", hint:"Compilers may ignore the hint, but the rule is tested." },
+  { topic:"Storage Classes", q:"Where do uninitialized static variables typically live?", a:"BSS (uninitialized data segment), initialized to 0 at runtime.", hint:"Contrast with initialized data segment." },
+
+  // ===================== x86-64 ADDRESSING =====================
+  { topic:"x86-64 Addressing", q:"In AT&T syntax, what does '$0x10' mean as a mov source?", a:"Immediate constant value 0x10 (not a memory address).", hint:"$ = immediate." },
+  { topic:"x86-64 Addressing", q:"What does '(%rbx)' mean in an operand?", a:"Indirect addressing: memory at the address stored in %rbx.", hint:"Like *rbx in C." },
+  { topic:"x86-64 Addressing", q:"Interpret 0x10(%rax).", a:"Memory at address (%rax + 0x10).", hint:"Displacement (offset) + base register." },
+  { topic:"x86-64 Addressing", q:"Interpret 0x8(%rsp, %rcx, 4).", a:"Memory at address (%rsp + %rcx*4 + 0x8).", hint:"Base + scaled index + displacement." },
+  { topic:"x86-64 Addressing", q:"What is the key difference between mov and lea?", a:"mov reads/writes the data at an address; lea computes/copies the effective address itself.", hint:"lea = address math without dereference." },
+  { topic:"x86-64 Addressing", q:"What does movl do differently when writing to a register?", a:"Writing to a 32-bit register zero-extends the upper 32 bits of the 64-bit register.", hint:"Classic x86-64 behavior." },
+
+  // ===================== FUNCTION CALLS & STACK =====================
+  { topic:"Stack & Calls", q:"What are %rsp and %rbp used for (conventionally)?", a:"%rsp is the stack pointer (top of stack). %rbp is the frame/base pointer (stable reference for locals/args).", hint:"Frame pointer may be omitted with optimizations." },
+  { topic:"Stack & Calls", q:"What typically gets stored in a stack frame?", a:"Return address, saved frame pointer, local variables, sometimes saved registers, and (in some conventions) spilled args.", hint:"Know the concept, not exact layout." },
+  { topic:"Stack & Calls", q:"Does the stack grow toward higher or lower addresses on x86/x86-64?", a:"Toward lower addresses (it 'grows down').", hint:"Opposite direction of heap growth." },
+  { topic:"Stack & Calls", q:"What does a function 'return address' represent?", a:"The instruction address to resume execution in the caller after the callee finishes.", hint:"Control-flow bookkeeping." },
+  { topic:"Stack & Calls", q:"Where is the return value commonly placed in x86-64 calling conventions?", a:"In %rax.", hint:"Basic convention your slides emphasize." },
+
+  // ===================== BUFFER OVERFLOW (CONCEPTUAL/DEFENSIVE) =====================
+  { topic:"Buffer Overflow", q:"Define a buffer overflow in one sentence.", a:"Writing more data to a buffer than it can hold, overwriting adjacent memory locations.", hint:"Definition should mention 'beyond allocated memory'." },
+  { topic:"Buffer Overflow", q:"List two consequences of a buffer overflow.", a:"Data corruption; memory access violations/crash; unexpected control flow; potentially attacker-chosen code execution.", hint:"Any two is fine." },
+  { topic:"Buffer Overflow", q:"Why are unbounded input/copy functions considered unsafe?", a:"They don’t enforce buffer length limits, so input can exceed the destination buffer size.", hint:"Think gets/strcpy-style behavior." },
+  { topic:"Buffer Overflow", q:"What is a stack canary (high level)?", a:"A secret value placed between locals and the return address; checked before return—if modified, the program aborts.", hint:"Detects overwrite attempts." },
+  { topic:"Buffer Overflow", q:"What does DEP / NX try to prevent?", a:"Execution of code in non-executable memory regions (like stack/heap) by marking pages as non-executable.", hint:"Stops injected-code execution in data regions." },
+  { topic:"Buffer Overflow", q:"What is ASLR (high level)?", a:"Randomizes memory locations of stack/heap/libraries (and executable if PIE) to make addresses harder to predict.", hint:"Defense against address guessing." },
+  { topic:"Buffer Overflow", q:"What are guard pages used for?", a:"Inaccessible pages placed to catch stack growth/overflows—touching them triggers a fault and aborts.", hint:"Early detection via fault." },
+  { topic:"Buffer Overflow", q:"Name two GCC/Linker hardening options mentioned in class and what they do (high level).", a:"Examples: stack protector (canaries); PIE (works with ASLR); RELRO (protects GOT); noexecstack/execstack (stack exec setting).", hint:"You don’t need every flag, but know what each concept protects." },
+
+  // ===================== GDB (BASICS) =====================
+  { topic:"GDB", q:"Why use GDB instead of printf-debugging (name two)?", a:"Step through execution; set breakpoints; inspect variables/memory; find where a segfault occurs.", hint:"Pick any two." },
+  { topic:"GDB", q:"What compile flag do you use to include debug symbols?", a:"-g (e.g., gcc -g program.c -o program).", hint:"From your GDB slide workflow." },
+  { topic:"GDB", q:"What is a breakpoint used for?", a:"Pauses program execution at a chosen point so you can inspect state.", hint:"Often set at main or a suspect function." },
+];
+
+// ---------- state ----------
+const LS_KEY = "cybr437_flashcards_v1";
+let state = {
+  known: {},       // id -> true
+  review: {},      // id -> true
+  seen: {},        // id -> true
+};
+
+function cid(card){ return card.topic + "::" + card.q; }
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw) state = JSON.parse(raw);
+  }catch(e){ /* ignore */ }
+}
+function saveState(){
+  localStorage.setItem(LS_KEY, JSON.stringify(state));
+}
+
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+}
+
+let filtered = [];
+let idx = 0;
+let showingAnswer = false;
+
+const els = {
+  topic: document.getElementById("topic"),
+  mode: document.getElementById("mode"),
+  search: document.getElementById("search"),
+  q: document.getElementById("q"),
+  a: document.getElementById("a"),
+  hint: document.getElementById("hint"),
+  tag: document.getElementById("tag"),
+  status: document.getElementById("status"),
+  deckStat: document.getElementById("deckStat"),
+  scoreStat: document.getElementById("scoreStat"),
+  progressStat: document.getElementById("progressStat"),
+  indexStat: document.getElementById("indexStat"),
+  bar: document.getElementById("bar"),
+  flipBtn: document.getElementById("flipBtn"),
+  prevBtn: document.getElementById("prevBtn"),
+  nextBtn: document.getElementById("nextBtn"),
+  knownBtn: document.getElementById("knownBtn"),
+  reviewBtn: document.getElementById("reviewBtn"),
+  resetBtn: document.getElementById("resetBtn"),
+};
+
+function buildTopicOptions(){
+  const topics = ["All Topics", ...Array.from(new Set(CARDS.map(c=>c.topic))).sort()];
+  els.topic.innerHTML = topics.map(t=>`<option value="${t}">${t}</option>`).join("");
+}
+
+function applyFilters(){
+  const t = els.topic.value;
+  const mode = els.mode.value;
+  const q = (els.search.value || "").trim().toLowerCase();
+
+  filtered = CARDS.filter(card=>{
+    const id = cid(card);
+    const matchTopic = (t === "All Topics") || (card.topic === t);
+    const matchSearch = !q || (card.q.toLowerCase().includes(q) || card.a.toLowerCase().includes(q));
+    let matchMode = true;
+    if(mode === "review") matchMode = !!state.review[id];
+    if(mode === "unknown") matchMode = !state.seen[id];
+    if(mode === "known") matchMode = !!state.known[id];
+    return matchTopic && matchSearch && matchMode;
+  });
+
+  if(filtered.length === 0){
+    idx = 0;
+    renderEmpty();
+    updateStats();
+    return;
+  }
+  idx = Math.min(idx, filtered.length - 1);
+  showingAnswer = false;
+  renderCard();
+  updateStats();
+}
+
+function statusFor(id){
+  if(state.known[id]) return "Known";
+  if(state.review[id]) return "Needs Review";
+  if(state.seen[id]) return "Seen";
+  return "Unseen";
+}
+
+function renderEmpty(){
+  els.tag.textContent = "No matches";
+  els.status.textContent = "Status: —";
+  els.q.textContent = "No cards match your filters/search.";
+  els.hint.textContent = "Try switching Topic/Mode or clearing search.";
+  els.a.style.display = "none";
+  els.a.textContent = "";
+  els.indexStat.textContent = "";
+}
+
+function renderCard(){
+  const card = filtered[idx];
+  const id = cid(card);
+
+  state.seen[id] = true;
+  saveState();
+
+  els.tag.textContent = card.topic;
+  els.status.textContent = "Status: " + statusFor(id);
+  els.q.textContent = card.q;
+  els.hint.textContent = card.hint ? ("Hint: " + card.hint) : "";
+  els.a.textContent = card.a;
+  els.a.style.display = showingAnswer ? "block" : "none";
+  els.indexStat.textContent = `Card ${idx+1} of ${filtered.length}`;
+}
+
+function updateStats(){
+  const total = CARDS.length;
+  const known = Object.keys(state.known).length;
+  const review = Object.keys(state.review).length;
+
+  els.deckStat.textContent = `Deck: ${total} cards`;
+  els.scoreStat.textContent = `Known: ${known} | Review: ${review}`;
+
+  // progress bar based on current filtered index
+  if(filtered.length){
+    const pct = Math.round(((idx+1) / filtered.length) * 100);
+    els.progressStat.textContent = `${idx+1} / ${filtered.length} (${pct}%)`;
+    els.bar.style.width = pct + "%";
+  } else {
+    els.progressStat.textContent = `0 / 0`;
+    els.bar.style.width = "0%";
+  }
+}
+
+function flip(){
+  if(!filtered.length) return;
+  showingAnswer = !showingAnswer;
+  renderCard();
+}
+
+function next(){
+  if(!filtered.length) return;
+  idx = (idx + 1) % filtered.length;
+  showingAnswer = false;
+  renderCard();
+  updateStats();
+}
+function prev(){
+  if(!filtered.length) return;
+  idx = (idx - 1 + filtered.length) % filtered.length;
+  showingAnswer = false;
+  renderCard();
+  updateStats();
+}
+
+function markKnown(){
+  if(!filtered.length) return;
+  const id = cid(filtered[idx]);
+  state.known[id] = true;
+  delete state.review[id];
+  saveState();
+  renderCard();
+  updateStats();
+  next();
+}
+function markReview(){
+  if(!filtered.length) return;
+  const id = cid(filtered[idx]);
+  state.review[id] = true;
+  delete state.known[id];
+  saveState();
+  renderCard();
+  updateStats();
+  next();
+}
+function resetProgress(){
+  if(!confirm("Reset all Known/Review/Seen progress?")) return;
+  state = { known:{}, review:{}, seen:{} };
+  saveState();
+  applyFilters();
+}
+
+// ---------- events ----------
+els.flipBtn.addEventListener("click", flip);
+els.nextBtn.addEventListener("click", next);
+els.prevBtn.addEventListener("click", prev);
+els.knownBtn.addEventListener("click", markKnown);
+els.reviewBtn.addEventListener("click", markReview);
+els.resetBtn.addEventListener("click", resetProgress);
+
+els.topic.addEventListener("change", applyFilters);
+els.mode.addEventListener("change", applyFilters);
+els.search.addEventListener("input", () => {
+  // small debounce
+  clearTimeout(window.__t);
+  window.__t = setTimeout(applyFilters, 120);
+});
+
+document.addEventListener("keydown", (e)=>{
+  // don't hijack typing in search
+  if(document.activeElement === els.search) return;
+
+  if(e.code === "Space"){ e.preventDefault(); flip(); }
+  if(e.key === "ArrowRight"){ next(); }
+  if(e.key === "ArrowLeft"){ prev(); }
+  if(e.key.toLowerCase() === "k"){ markKnown(); }
+  if(e.key.toLowerCase() === "r"){ markReview(); }
+});
+
+// ---------- init ----------
+loadState();
+shuffle(CARDS); // shuffle on load
+buildTopicOptions();
+els.topic.value = "All Topics";
+applyFilters();
+</script>
+</body>
+</html>
