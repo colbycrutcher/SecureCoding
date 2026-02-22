@@ -56,3 +56,35 @@ Lab 7
 ![File Endianness](image-9.png)
 
 ![checksec](image-10.png)
+
+\clearpage
+
+I ran cyclic 200 to crash the program to find the EIP address. I then used cyclic -l with that address to find the offset, which was an offset of 112.
+
+![EIP](image-11.png)
+
+![Offset](image-12.png)
+
+We  need to write 112 bytes of junk.
+
+![info functions](image-13.png)
+
+We also need to see what arguments and checks we need to continue this exploit.
+
+![param_check and test_check disassembled](image-14.png)
+
+\clearpage
+
+- test_check doesn't check for any arguments. It just prints a message and finishes.
+
+- param_check does look for one argument on the stack ([ebp+0x8]) and then prints it out using printf. We can give it any recognizable hex value, like 0x12345, so it prints "param_checked: 12345".
+
+- I used this payload to exploit:
+```py
+p = process(['/home/ccrutcher/lab7/challenge2', b"A" * 112 + 
+p32(0x08049186) + p32(0x080491b1) + p32(0x0804920a) + p32(0x12345)])
+
+```
+
+
+![Final output success](image-15.png)
