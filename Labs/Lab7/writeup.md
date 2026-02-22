@@ -19,9 +19,11 @@ Lab 7
 
 ![Main Disassembled](image-2.png)
 
+\clearpage
+
 - Main calls a function called 'vuln'. 
 
-To start, I ran cyclic 100 to generate an input to crash the program. When I did I got the EIP register value:
+- To start, I ran cyclic 100 to generate an input to crash the program. When I did I got the EIP register value:
 
 ![EIP Register](image-3.png)
 
@@ -32,6 +34,8 @@ To start, I ran cyclic 100 to generate an input to crash the program. When I did
 - We need to find the function we are trying to redirect the execution to, and info functions reveals flag, which we should investigate more:
 
 ![info functions](image-5.png)
+
+\clearpage
 
 ![Disassembled flag function](image-6.png)
 
@@ -47,3 +51,8 @@ To start, I ran cyclic 100 to generate an input to crash the program. When I did
 ![Flag captured](image-7.png)
 
 
+# Challenge 2
+
+![File Endianness](image-9.png)
+
+![checksec](image-10.png)
