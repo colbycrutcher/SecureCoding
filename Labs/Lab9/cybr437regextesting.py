@@ -13,7 +13,7 @@ def test_email_pattern_valid_format():
     assert cybr437regex.email_pattern("john.smith@ewu.edu ") == True
 
 def test_email_pattern_invalid_format():
-    assert cybr437regex.email_pattern("mr.john.smith@ewu.edu") == False
+    assert cybr437regex.email_pattern("mr..john.smith@ewu.edu") == False
 
 #===========================================================
 def test_date_pattern_valid_format():
@@ -32,9 +32,17 @@ def test_password_pattern_invalid_format():
 #===========================================================
 def test_ion_pattern_valid_format():
     assert cybr437regex.ion_pattern("0rion") == True
+    assert cybr437regex.ion_pattern("conversIon") == True
+    assert cybr437regex.ion_pattern("Lion") == True
+
 
 def test_ion_pattern_invalid_format():
-    assert cybr437regex.ion_pattern("colby") == False
+    assert cybr437regex.ion_pattern("fashion") == False
+    assert cybr437regex.ion_pattern("station") == False
+    assert cybr437regex.ion_pattern("radiation") == False
+    assert cybr437regex.ion_pattern("cat") == False
+    assert cybr437regex.ion_pattern("cscd") == False
+
 
 if __name__ == '__main__':
     pytest.main(["-q", "--tb=no", __file__])

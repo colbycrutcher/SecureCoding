@@ -49,7 +49,7 @@ class cybr437regex:
         if not isinstance(ion_string, str) or not ion_string.strip():
             raise ValueError("Bad ion_string Parameter")
         
-        regex = r"^(?i)(?:[A-Za-z]{2})*[A-Za-z]ion$"
+        regex = r"(?i)^([^a-z]*[a-z][^a-z]*[a-z])*[^a-z]*[a-z][^a-z]*ion$"
         
         return re.fullmatch(regex, ion_string) is not None
         
