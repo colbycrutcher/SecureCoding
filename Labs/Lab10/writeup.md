@@ -81,11 +81,13 @@ Overall, the four tools overlap on several major issues, but each emphasizes dif
 
 My code: 
 
+
+
 ![My scan.py](image-5.png)
 
 
 
-For Task 2, I wrote a Python script that uses the re library to scan our C code for vulnerable or deprecated functions, basically acting like a custom, lightweight version of Flawfinder. Utilizing the re module, I use pythons' built in lib for regex. To do this, I set up a dictionary that maps specific regex patterns—like ```bgets\s*\(``` or unbounded scanfs—to custom warning messages. The script opens task2.c and reads it line by line using enumerate() so I can keep track of the exact line numbers. As it loops through the file, it checks each line against my dictionary of dangerous functions using re.search(), and whenever it gets a hit, it prints out the specific warning message, the line number, and the stripped line of code so the user knows exactly where the vulnerability is
+For Task 2, I wrote a Python script that uses the re library to scan our C code for vulnerable or deprecated functions, basically acting like a custom, lightweight version of Flawfinder. Utilizing the re module, I use pythons' built in lib for regex. To do this, I set up a dictionary that maps specific regex patterns—like ```bgets\s*\(``` or unbounded scanfs—to custom warning messages. The script opens task2.c and reads it line by line using enumerate() so I can keep track of the exact line numbers. As it loops through the file, it checks each line against my dictionary of dangerous functions using re.search(), and whenever it gets a hit, it prints out the specific warning message, the line number, and the stripped line of code so the user knows exactly where the vulnerability is. To run my prog: python3 scan.py task2.c
 
 My output:
 

@@ -1,7 +1,7 @@
 import re
 
 def analyze_c_file(filepath):
-    # Dictionary mapping regex patterns to specific warning messages
+    # dictionary mapping regex patterns to specific warning messages
     vulnerabilities = {
         r'\bgets\s*\(': "CRITICAL: Deprecated function 'gets()' found. Inherently vulnerable to buffer overflows.",
         r'\bstrcpy\s*\(': "WARNING: Unsafe function 'strcpy()' found. Does not check bounds.",
@@ -15,12 +15,12 @@ def analyze_c_file(filepath):
 
     try:
         with open(filepath, 'r') as file:
-            # Read file line by line, tracking the line number
+            # reads file line by line, tracking the line number
             for line_num, line in enumerate(file, 1):
-                # Check the current line against all our regex patterns
+                # checks the current line against all our regex patterns
                 for pattern, message in vulnerabilities.items():
                     if re.search(pattern, line):
-                        # Output the required format: Message, Line Number, Code
+                        # outputs the format: Message, Line Number, Code
                         print(f"Issue: {message}")
                         print(f"Line Number: {line_num}")
                         print(f"Code snippet: {line.strip()}\n")
@@ -30,5 +30,5 @@ def analyze_c_file(filepath):
         print(f"Error: Could not find the file '{filepath}'.")
 
 if __name__ == "__main__":
-    # Run the analyzer on task2.c
+    # runs the analyzer on task2.c
     analyze_c_file('task2.c')
